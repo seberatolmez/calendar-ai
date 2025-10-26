@@ -15,8 +15,11 @@ export default function LoginPage() {
         </button>
       ) : (
         <button onClick={handleSignIn} 
-        className="bg-blue-500 text-white px-4 py-2 rounded-md">
-          Sign in with Google
+        className="flex items-center !bg-[#6F55FF] text-white px-4 py-2 rounded-md">
+          <img loading="lazy" height="18" width="18" 
+          id="provider-logo-dark" 
+          src="https://authjs.dev/img/providers/google.svg"></img>
+          <span className="ml-2">Sign in with Google</span>
         </button>
       )}
     </div>

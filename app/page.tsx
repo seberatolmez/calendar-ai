@@ -1,25 +1,17 @@
-// main dashboard page for cal-ai; chatbot box, results preview of events before applying to calendar, apply to calendar and more.
 "use client";
-import {handleSignIn,handleSignOut} from "@/app/service/auth.service";
 import { useSession } from "next-auth/react";
-
+import { useRouter } from "next/navigation";
 export default function Home() {
-  const {data: session} = useSession();
-  console.log(session);
-  return (
-    <div className="flex flex-col items-center justify-center h-screen">
-      <h1>Home</h1>
-      {session ? (
-        <button onClick={handleSignOut} 
-        className="bg-red-500 text-white px-4 py-2 rounded-md">
-          Sign Out
-        </button>
-      ) : (
-        <button onClick={handleSignIn} 
-        className="bg-blue-500 text-white px-4 py-2 rounded-md">
-          Sign in with Google
-        </button>
-      )}
-    </div>
-  );
+    const {data: session} = useSession();
+    const router = useRouter();
+    if(!session || session === null) {
+        router.push("/login");
+    }
+    return (
+        <div className="flex flex-col items-center justify-center h-screen">
+            <h1>Home</h1>
+            <p>Welcome to the home page</p>
+            <h1>session: {JSON.stringify(session)}</h1>
+        </div>
+    )
 }

@@ -1,0 +1,1 @@
+// parse prompts from user and return parsed events

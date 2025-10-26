@@ -1,4 +1,4 @@
-const event = {
+interface CalendarEvent  {
     summary: string;
     location: string;
     description: string;
@@ -17,3 +17,18 @@ const event = {
     overrides: {method: string; minutes: number}[];
   };
 };
+
+interface ParsedEvent { // parsed event from prompt by ai model
+    
+};
+
+interface UserPrompt { 
+
+};
+
+interface APIResponse { 
+
+};
+
+
+

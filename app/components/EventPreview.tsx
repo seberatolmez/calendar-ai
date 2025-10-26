@@ -1,0 +1,1 @@
+// structure event preview component

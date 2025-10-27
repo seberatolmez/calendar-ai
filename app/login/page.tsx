@@ -3,12 +3,13 @@ import { useEffect } from "react";
 import { handleSignIn } from "@/app/service/auth.service";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 export default function LoginPage() {
   const { data: session } = useSession();
   const router = useRouter();
 
-  // Login olmuş kullanıcıyı ana sayfaya yönlendir
+  // Login successful user is redirected to the home page
   useEffect(() => {
     if (session) {
       router.push("/");
@@ -17,10 +18,24 @@ export default function LoginPage() {
 
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-gray-50">
-      <div className="bg-white shadow-lg rounded-2xl px-10 py-12 flex flex-col items-center space-y-6">
+      <div className="flex row items-center gap-4">
+        <Image 
+        src="/google-calendar-logo.png" 
+        alt="Google Calendar Logo" 
+        width={100} 
+        height={100} />
+
+        <Image 
+        src="/gemini-logo.png" 
+        alt="Gemini Logo" 
+        width={90} 
+        height={90}
+        unoptimized />
+        </div>
+      <div className="rounded-2xl px-10 py-12 flex flex-col items-center space-y-6">
         <div className="text-center space-y-2">
           <h1 className="text-3xl font-semibold text-gray-800">
-            Log in to your account
+            Welcome to Cal-AI
           </h1>
           <p className="text-gray-500 text-sm">
             Welcome back! Please log in to continue.

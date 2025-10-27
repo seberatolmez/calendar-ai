@@ -4,6 +4,8 @@ import { useRouter } from "next/navigation";
 import { handleSignOut } from "./service/auth.service";
 import { useEffect } from "react";
 import { LogOutIcon } from "lucide-react";
+import { Loader2Icon } from "lucide-react";
+
 export default function Home() {
     const {data: session} = useSession();
     const router = useRouter();
@@ -25,7 +27,7 @@ export default function Home() {
             disabled={!session || session === null}
             >
                 <LogOutIcon />
-                Sign Out
+                {!session || session === null ? "Signing Out..." : "Sign Out"}
             </button>
             <footer>
                 <p className="text-sm text-gray-500">Built by  

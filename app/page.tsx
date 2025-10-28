@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { handleSignOut } from "./service/auth.service";
 import { useEffect } from "react";
 import { LogOutIcon } from "lucide-react";
+import { listEvents } from "./service/calendar.service";
 import { Loader2Icon } from "lucide-react";
 
 export default function Home() {
@@ -29,6 +30,15 @@ export default function Home() {
                 <LogOutIcon />
                 {!session || session === null ? "Signing Out..." : "Sign Out"}
             </button>
+
+            <div>
+                <h1>Upcoming Events</h1>
+                <ul>
+                    {listEvents().map((event) => (
+                        <li key={event.id}>{event.summary}</li>
+                    ))}
+                </ul>
+            </div>
             <footer>
                 <p className="text-sm text-gray-500">Built by  
                     <a href={`mailto:${developerEmail}`} 

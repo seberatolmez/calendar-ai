@@ -30,7 +30,7 @@ export default function LoginPage() {
         alt="Gemini Logo" 
         width={90} 
         height={90}
-        unoptimized />
+       />
         </div>
       <div className="rounded-2xl px-10 py-12 flex flex-col items-center space-y-6">
         <div className="text-center space-y-2">

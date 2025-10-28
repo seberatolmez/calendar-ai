@@ -9,15 +9,8 @@ export const authOptions: NextAuthOptions = {
       clientSecret: process.env.CLIENT_SECRET!,
       authorization: {
         params: {
-          scopes: [
-            'openid',
-            'email',
-            'profile',
-            'https://www.googleapis.com/auth/calendar',
-            'https://www.googleapis.com/auth/calendar.events',
-          ].join(' '), 
-
-          access_type: 'offline', // to get refresh token
+          scope: 'openid email profile https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/calendar.events',
+          access_type: 'offline',
           prompt: 'consent',
         }
       }

@@ -1,3 +1,5 @@
+import nextAuth from 'next-auth';
+
 //auth types
 
 declare module 'next-auth' {

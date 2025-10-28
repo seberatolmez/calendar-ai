@@ -29,7 +29,7 @@ export async function listEvents(accessToken: string,maxResults: number){
             orderBy: 'startTime',
         });
 
-        return response.data.items || "No events found";
+        return response.data.items || [];
      }catch(error){
         console.error('Error listing events:', error);
         throw new Error('Failed to list events');

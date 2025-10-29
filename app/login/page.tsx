@@ -9,7 +9,6 @@ export default function LoginPage() {
   const { data: session } = useSession();
   const router = useRouter();
 
-  // Login successful user is redirected to the home page
   useEffect(() => {
     if (session) {
       router.push("/");

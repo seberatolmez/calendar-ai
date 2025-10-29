@@ -1,12 +1,14 @@
 // calendar service to commit events, update events, delete events, etc.
 
 import { google, calendar_v3 } from 'googleapis';
-import { NextResponse } from 'next/server';
+
+const CLIENT_ID = process.env.CLIENT_ID;
+const CLIENT_SECRET = process.env.CLIENT_SECRET;
 
 function getCalendarClient(accessToken: string) {
     const client = new google.auth.OAuth2(
-        process.env.CLIENT_ID!,
-        process.env.CLIENT_SECRET!,
+        CLIENT_ID!,
+        CLIENT_SECRET!,
     );
 
     client.setCredentials({
@@ -15,6 +17,7 @@ function getCalendarClient(accessToken: string) {
 
     return google.calendar({version: 'v3', auth: client});
 }
+
 
 
 // List upcoming events 
@@ -47,8 +50,12 @@ export async function createEvent(accessToken: string, event: calendar_v3.Schema
             requestBody: event,
         })
 
-        return response.data; 
-    }catch(error){
+        return { //TODO: may be able to define a proper return type
+            message: 'Event created successfully',
+            event: response.data
+        }; 
+
+    } catch(error){
         console.error('Error creating event:', error);
         throw new Error('Failed to create event');
     }
@@ -58,12 +65,19 @@ export async function updateEvent(accessToken: string, eventId: string, updatedE
     
     const calendarClient = getCalendarClient(accessToken);
 
+    //TODO: impelement checks for event existence and input validation 
+
     try {
         const response = await calendarClient.events.update({
             calendarId: 'primary',
             eventId: eventId,
             requestBody: updatedEvent,
         });
+        return {
+            message: 'Event updated successfully',
+            event:response.data
+        };
+
     } catch (error) {
         console.error('Error updating event:', error);
         throw new Error('Failed to update event');
@@ -73,28 +87,40 @@ export async function updateEvent(accessToken: string, eventId: string, updatedE
 export async function deleteEvent(accessToken: string, eventId: string){
 
     const calendarClient = getCalendarClient(accessToken);
-    let response = NextResponse.json({});
+
     try {
         
-
         await calendarClient.events.delete({
             calendarId: 'primary',
             eventId: eventId,
         });
 
-        response = NextResponse.json("Event deleted successfully");
+        return {
+            message: 'Event deleted successfully',
+        };
+        
     } catch (error) {
-        console.error('Error deleting event:', error); // log the eror 
-        response = NextResponse.json(
-            { error: 'Failed to delete event' },
-            { status: 500 }
-        );
-        
-        throw new Error('Failed to delete event'); 
-        
+        console.error('Error deleting event:', error); // log the eror
+        throw new Error('Failed to delete event');
+    }
+}
+
+export async function getEventById(accessToken: string, eventId: string){
+    const calendarClient = getCalendarClient(accessToken);
+
+    try {
+        const response = await calendarClient.events.get({
+            calendarId: 'primary',
+            eventId: eventId,
+        });
+
+        return response.data;
+
+    } catch (error) {
+        console.error('Error fetching event with ID: ',eventId);
+        throw new Error('Failed to fetch event');
     }
 
-    return response;
 }
 
 

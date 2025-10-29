@@ -36,22 +36,22 @@ export default function LoginPage() {
           <h1 className="text-3xl font-semibold text-gray-800">
             Welcome to Cal-AI
           </h1>
-          <p className="text-gray-500 text-sm">
-            Welcome back! Please log in to continue.
+          <p className="text-gray-500 text-base">
+            {(session? "You already signed in." : "Please sign in to continue.")}
           </p>
         </div>
 
         {session ? (
           <button
             onClick={() => router.push("/")}
-            className="flex items-center justify-center w-full gap-3 bg-[#6F55FF] hover:bg-[#5d46e0] text-white text-base font-medium px-7 py-3 rounded-lg shadow-md transition-all duration-200 cursor-pointer"
+            className="flex items-center justify-center w-full gap-3 bg-[#6F55FF] hover:bg-[#5d46e0] text-white font-medium px-7 py-3 rounded-lg shadow-md transition-all duration-200 cursor-pointer"
           >
             Continue
           </button>
         ) : (
           <button
             onClick={handleSignIn}
-            className="flex items-center justify-center w-full gap-3 bg-[#6F55FF] hover:bg-[#5d46e0] text-white text-base font-medium px-7 py-3 rounded-lg shadow-md transition-all duration-200 cursor-pointer"
+            className="flex items-center justify-center w-full gap-3 bg-[#6F55FF] hover:bg-[#5d46e0] text-white font-medium px-7 py-3 rounded-lg shadow-md transition-all duration-200 cursor-pointer"
           >
             <img
               loading="lazy"

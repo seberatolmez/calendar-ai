@@ -42,18 +42,28 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex flex-col items-center bg-foreground text-background">
-      <div className="flex flex-row items-center justify-between w-full px-6 py-4 fixed top-0 left-0 bg-foreground shadow-md">
+      <div className="flex flex-row items-center justify-between w-full px-6 py-3 fixed top-0 left-0 shadow-md">
         <h1>Home</h1>
 
+        <div className="flex flex-row items-center gap-4">
+        
         <button
-          className="bg-red-500 text-white px-3 py-2 rounded-md flex items-center gap-2 cursor-pointer"
+            className="bg-[#6F55FF] hover:bg-[#5d46e0] text-white px-3 py-2 rounded-md flex items-center gap-2 cursor-pointer text-sm"
+            onClick={() => { window.open('https://calendar.google.com')}}
+        >
+          Go to Calendar   
+        </button>
+        <button
+          className="bg-red-500 text-white px-3 py-2 rounded-md flex items-center gap-2 cursor-pointer text-sm"
           onClick={handleSignOut}
           disabled={!session || session === null}
         >
-          <LogOutIcon />
+          <LogOutIcon size={18}/>
           {!session || session === null ? "Signing Out..." : "Sign Out"}
         </button>
-      </div>
+
+        </div>
+        </div>
 
       <main className="flex flex-col items-center w-full max-w-2xl mt-24 px-4 flex-grow">
         <p>Welcome to the home page</p>

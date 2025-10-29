@@ -34,7 +34,7 @@ export default function LoginPage() {
       <div className="rounded-2xl px-10 py-12 flex flex-col items-center space-y-6">
         <div className="text-center space-y-2">
           <h1 className="text-3xl font-semibold text-gray-800">
-            Welcome to Cal-AI
+            Welcome to Garbi
           </h1>
           <p className="text-gray-500 text-base">
             {(session? "You already signed in." : "Please sign in to continue.")}

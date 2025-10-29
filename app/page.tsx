@@ -47,9 +47,8 @@ export default function Home() {
         <Image 
         src="/garbi-logo-temporary.png" 
         alt="logo"
-        width= {140}
-        height={40}
-            priority={true}
+        width= {120}
+        height={30}
         />
 
         <div className="flex flex-row items-center gap-4">
@@ -71,9 +70,8 @@ export default function Home() {
 
         </div>
         </div>
-
+        
       <main className="flex flex-col items-center w-full max-w-2xl mt-24 px-4 flex-grow">
-        <p>Welcome to the home page</p>
         <h1>Welcome back, {session?.user?.name}</h1>
         <h2 className="text-xl font-bold mb-4 mt-6">Upcoming Events</h2>
 

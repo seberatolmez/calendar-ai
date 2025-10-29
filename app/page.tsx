@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { handleSignOut } from "./service/auth.service";
 import { useEffect, useState } from "react";
 import { LogOutIcon } from "lucide-react";
+import Image from "next/image";
 
 export default function Home() {
   const { data: session } = useSession();
@@ -43,7 +44,13 @@ export default function Home() {
   return (
     <div className="min-h-screen flex flex-col items-center bg-foreground text-background">
       <div className="flex flex-row items-center justify-between w-full px-6 py-3 fixed top-0 left-0 shadow-md">
-        <h1>Home</h1>
+        <Image 
+        src="/garbi-logo-temporary.png" 
+        alt="logo"
+        width= {140}
+        height={40}
+            priority={true}
+        />
 
         <div className="flex flex-row items-center gap-4">
         

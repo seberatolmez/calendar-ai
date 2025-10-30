@@ -17,7 +17,7 @@ export async function parseEventFromPrompt(rawText: String){
 
     const prompt= `You are an expert calendar assistant. 
     Your task is to extract event details from user input 
-    and format them into a structured JSON object suitable with calendar_v3.Schema$Event for crud operations on event.
+    and format them into a structured JSON object suitable with calendar_v3.Schema$Event for create and update operations on event.
 
     Here is the user input: "${rawText}"
     
@@ -49,7 +49,7 @@ export async function parseEventFromPrompt(rawText: String){
     try {   
 
         const response = await model.generateContent(prompt);
-        console.log('AI Response:', response);
+        console.log('AI Response:', response); // to test 
     } catch (error) {
 
         console.error('Error generating content:', error);

@@ -16,22 +16,14 @@ export default function LoginPage() {
   }, [session, router]);
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen bg-gray-50">
-      <div className="flex row items-center gap-4">
-        <Image 
-        src="/google-calendar-logo.png" 
-        alt="Google Calendar Logo" 
-        width={100} 
-        height={100} />
-
-        <Image 
-        src="/gemini-logo.png" 
-        alt="Gemini Logo" 
-        width={90} 
-        height={90}
-       />
-        </div>
+    <div className="flex flex-col items-center h-screen bg-gray-50">
       <div className="rounded-2xl px-10 py-12 flex flex-col items-center space-y-6">
+        <Image
+        src="/garbi-logo.png"
+        alt="Garbi Logo"
+        width={200}
+        height={200}
+      />
         <div className="text-center space-y-2">
           <h1 className="text-3xl font-semibold text-gray-800">
             Welcome to Garbi

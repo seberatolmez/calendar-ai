@@ -45,7 +45,7 @@ export default function Home() {
     <div className="min-h-screen flex flex-col items-center bg-foreground text-background">
       <div className="flex flex-row items-center justify-between w-full px-6 py-3 fixed top-0 left-0 shadow-md">
         <Image 
-        src="/garbi-logo-temporary.png" 
+        src="/garbi-logo.png" 
         alt="logo"
         width= {120}
         height={30}

@@ -56,4 +56,5 @@ export async function parseEventFromPrompt(rawText: String){
         throw new Error('Failed to generate content from AI model');
     }
 
+
 }

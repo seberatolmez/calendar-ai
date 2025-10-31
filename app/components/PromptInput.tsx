@@ -6,7 +6,7 @@ import {
   PromptInput,
   PromptInputSubmit,
   PromptInputTextarea,
-  PromptInputToolbar,
+  PromptInputToolbar
 } from '@/components/ui/shadcn-io/ai/prompt-input';
 import { useState, type FormEventHandler } from 'react';
 

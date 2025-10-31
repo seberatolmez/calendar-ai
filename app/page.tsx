@@ -5,11 +5,18 @@ import { handleSignOut } from "./service/auth.service";
 import { useEffect, useState } from "react";
 import { LogOutIcon } from "lucide-react";
 import Image from "next/image";
+import {
+  PromptInput,
+  PromptInputTextarea,
+  PromptInputToolbar,
+  PromptInputSubmit,
+} from "@/components/ui/shadcn-io/ai/prompt-input";
 
 export default function Home() {
   const { data: session } = useSession();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [input, setInput] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [events, setEvents] = useState<any[]>([]);
   const developerEmail = process.env.NEXT_PUBLIC_DEVELOPER_EMAIL;
@@ -107,6 +114,22 @@ export default function Home() {
               ))}
             </ul>
           )}
+      </section>
+      <section className="w-full mt-10">
+        <div className="rounded-xl bg-muted/20 shadow-sm">
+
+        <PromptInput onSubmit={() => {}}>
+          <PromptInputTextarea
+            value={input}
+            onChange={(e) => setInput(e.currentTarget.value)}
+            placeholder="Type your message..."
+          />
+          <PromptInputToolbar>
+            <PromptInputSubmit disabled={!input.trim()} />
+          </PromptInputToolbar>
+           </PromptInput>
+      
+          </div>  
         </section>
       </main>
 

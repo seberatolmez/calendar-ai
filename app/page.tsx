@@ -15,7 +15,7 @@ export default function Home() {
   const developerEmail = process.env.NEXT_PUBLIC_DEVELOPER_EMAIL;
 
   useEffect(() => {
-    if (!session || session === null) {
+    if (!session) {
       router.push("/login");
     }
   }, [session, router]);
@@ -33,61 +33,73 @@ export default function Home() {
             setError(data.error);
           }
         })
-        .catch((err) => {
-          console.error("Failed to fetch events:", err);
-          setError("Failed to load events");
-        })
+        .catch(() => setError("Failed to load events"))
         .finally(() => setLoading(false));
     }
   }, [session?.accessToken]);
 
   return (
-    <div className="min-h-screen flex flex-col items-center bg-foreground text-background">
-      <div className="flex flex-row items-center justify-between w-full px-6 py-3 fixed top-0 left-0 shadow-md">
-        <Image 
-        src="/garbi-logo.png" 
-        alt="logo"
-        width= {120}
-        height={30}
+    <div className="min-h-screen flex flex-col bg-background text-foreground">
+      {/* Navbar */}
+      <nav className="flex items-center justify-between w-full px-8 py-2 fixed top-0 left-0 bg-background/90 backdrop-blur-md shadow-sm">
+        <Image
+          src="/garbi-logo-copy.png"
+          alt="Garbi Logo"
+          width={120}
+          height={25}
+          className="object-contain w-auto cursor-pointer"
+          onClick={() => router.push("/")}
         />
 
-        <div className="flex flex-row items-center gap-4">
-        
-        <button
-            className="bg-[#6F55FF] hover:bg-[#5d46e0] text-white px-3 py-2 rounded-md flex items-center gap-2 cursor-pointer text-sm"
-            onClick={() => { window.open('https://calendar.google.com')}}
-        >
-          Go to Calendar   
-        </button>
-        <button
-          className="bg-red-500 text-white px-3 py-2 rounded-md flex items-center gap-2 cursor-pointer text-sm"
-          onClick={handleSignOut}
-          disabled={!session || session === null}
-        >
-          <LogOutIcon size={18}/>
-          {!session || session === null ? "Signing Out..." : "Sign Out"}
-        </button>
-
+        <div className="flex items-center gap-3">
+          <button
+            className="bg-[#6F55FF] hover:bg-[#5d46e0] text-white px-4 py-2 rounded-lg text-sm font-medium transition-all"
+            onClick={() => window.open("https://calendar.google.com")}
+          >
+            Go to Calendar
+          </button>
+          <button
+            className="flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all"
+            onClick={handleSignOut}
+            disabled={!session}
+          >
+            <LogOutIcon size={16} />
+            {session ? "Sign Out" : "Signing Out..."}
+          </button>
         </div>
-        </div>
-        
-      <main className="flex flex-col items-center w-full max-w-2xl mt-24 px-4 flex-grow">
-        <h1>Welcome back, {session?.user?.name}</h1>
-        <h2 className="text-xl font-bold mb-4 mt-6">Upcoming Events</h2>
+      </nav>
 
-        <section className="flex flex-col max-h-[60vh] overflow-y-auto w-full gap-2">
-          {loading && <p>Loading events...</p>}
-          {error && <p className="text-red-500">{error}</p>}
+      {/* Main */}
+      <main className="flex flex-col items-center w-full max-w-3xl mx-auto mt-32 px-6 flex-grow">
+        <div className="text-center mb-10">
+          <h1 className="text-2xl font-bold mb-2">
+            Welcome back{session?.user?.name ? `, ${session.user.name}` : ""} 👋
+          </h1>
+          <p className="text-gray-400 text-sm">
+            Here are your upcoming events synced from Google Calendar.
+          </p>
+        </div>
+
+        <section className="flex flex-col w-full max-h-[60vh] overflow-y-auto gap-3">
+          {loading && (
+            <p className="text-gray-400 text-center">Loading events...</p>
+          )}
+          {error && <p className="text-red-500 text-center">{error}</p>}
           {!loading && !error && events.length === 0 && (
-            <p>No upcoming events</p>
+            <p className="text-gray-400 text-center">No upcoming events.</p>
           )}
           {!loading && events.length > 0 && (
-            <ul className="space-y-2">
+            <ul className="space-y-3">
               {events.map((event) => (
-                <li key={event.id} className="p-3 bg-gray-800 rounded">
-                  <div className="font-semibold">{event.summary}</div>
+                <li
+                  key={event.id}
+                  className="p-4 bg-gray-900/70 border border-gray-800 rounded-xl hover:bg-gray-900 transition-all"
+                >
+                  <div className="font-semibold text-white">
+                    {event.summary}
+                  </div>
                   {event.start?.dateTime && (
-                    <div className="text-sm text-gray-400">
+                    <div className="text-sm text-gray-400 mt-1">
                       {new Date(event.start.dateTime).toLocaleString()}
                     </div>
                   )}
@@ -98,7 +110,8 @@ export default function Home() {
         </section>
       </main>
 
-      <footer className="py-4 text-center">
+      {/* Footer */}
+      <footer className="py-6 text-center border-t mt-8">
         <p className="text-sm text-gray-500">
           Built by{" "}
           <a

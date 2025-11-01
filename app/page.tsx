@@ -11,6 +11,7 @@ import {
   PromptInputToolbar,
   PromptInputSubmit,
 } from "@/components/ui/shadcn-io/ai/prompt-input";
+import { Loader } from "@/components/ui/shadcn-io/ai/loader";
 
 export default function Home() {
   const { data: session } = useSession();
@@ -50,22 +51,10 @@ export default function Home() {
     setLoading(true);
     setError(null);
     try {
-      const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-      const toOffsetIso = (d: Date) => {
-        const tzo = -d.getTimezoneOffset();
-        const sign = tzo >= 0 ? '+' : '-';
-        const pad = (n: number) => String(Math.floor(Math.abs(n))).padStart(2, '0');
-        return (
-          `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}` +
-          `T${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}` +
-          `${sign}${pad(tzo / 60)}:${pad(tzo % 60)}`
-        );
-      };
-      const userNowISO = toOffsetIso(new Date());
       const response = await fetch("/api/parse-prompts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt: input.trim(), userTimeZone, userNowISO }),
+        body: JSON.stringify({ prompt: input.trim() }),
       });
 
       const data = await response.json().catch(() => null);
@@ -169,11 +158,20 @@ export default function Home() {
       <section className="w-full mt-10">
         <div className="rounded-xl bg-muted/20 shadow-sm">
 
+       { loading ?  
+          <div className="flex flex-col items-center justify-center p-4">
+            <Loader size={18}/> 
+            <p className="text-gray-400 text-center">Processing your request...</p>
+          </div> : null
+          } 
+
         <PromptInput onSubmit={() => {}}>
           <PromptInputTextarea
             value={input}
             onChange={(e) => setInput(e.currentTarget.value)}
-            placeholder="Type what you want to do with garbi..."
+            placeholder= {loading ?  
+              "Processing your request..."
+              : "Type what you want to do with garbi..."}
           />
           <PromptInputToolbar>
             <PromptInputSubmit

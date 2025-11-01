@@ -169,9 +169,7 @@ export default function Home() {
           <PromptInputTextarea
             value={input}
             onChange={(e) => setInput(e.currentTarget.value)}
-            placeholder= {loading ?  
-              "Processing your request..."
-              : "Type what you want to do with garbi..."}
+            placeholder="Type what you want to do with garbi..."
           />
           <PromptInputToolbar>
             <PromptInputSubmit

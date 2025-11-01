@@ -27,47 +27,61 @@ export default function Home() {
     }
   }, [session, router]);
 
-  useEffect(() => {
-    if (session?.accessToken) {
-      setLoading(true);
-      fetch("/api/calendar/list?maxResults=10")
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.success) {
-            setEvents(data.events);
-            setError(null);
-          } else {
-            setError(data.error);
-          }
-        })
-        .catch(() => setError("Failed to load events"))
-        .finally(() => setLoading(false));
-    }
-  }, [session?.accessToken]);
+  // useEffect(() => {
+  //   if (session?.accessToken) {
+  //     setLoading(true);
+  //     fetch("/api/calendar/list?maxResults=10")
+  //       .then((res) => res.json())
+  //       .then((data) => {
+  //         if (data.success) {
+  //           setEvents(data.events);
+  //           setError(null);
+  //         } else {
+  //           setError(data.error);
+  //         }
+  //       })
+  //       .catch(() => setError("Failed to load events"))
+  //       .finally(() => setLoading(false));
+  //   }
+  // }, [session?.accessToken]);
 
   const handleSubmit = async () => {
     if (!input.trim()) return;
-
+    setLoading(true);
+    setError(null);
     try {
+      const response = await fetch("/api/parse-prompts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt: input.trim() }),
+      });
 
-      const response = await fetch("/api/parse-prompts",
-
-        {
-          method: "POST",
-          headers: {"Content-Type": "application/json",},
-          body: JSON.stringify({ prompt: input.trim() }),
-        }
-      );
-
+      const data = await response.json().catch(() => null);
       if (!response.ok) {
-        throw new Error("Failed to submit prompt");
+        setError((data && data.error) || "Failed to submit prompt");
+        return;
       }
 
-      const data = await response.json();
-      console.log("Parsed Response:", data);
+      console.log("Parsed Event:", data?.event);
+      setEvents((prev) => [...prev, data.event]);
 
-    } catch (error) {
-      console.error("Error submitting prompt:", error);
+      // commit event to calendar (test)
+      try {
+            await fetch("/api/commit-events", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data?.event),
+      }); 
+      } catch (commitError) {
+            console.error("Error committing event to calendar:", commitError);
+      }
+
+
+    } catch (err) {
+      console.error("Error submitting prompt:", err);
+      setError("Unexpected error while submitting prompt");
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -150,13 +164,15 @@ export default function Home() {
             placeholder="Type what you want to do with garbi..."
           />
           <PromptInputToolbar>
-            <PromptInputSubmit disabled={!input.trim()}
-            onClick={handleSubmit}
-            
+            <PromptInputSubmit
+              disabled={!input.trim() || loading}
+              onClick={handleSubmit}
             />
           </PromptInputToolbar>
            </PromptInput>
-      
+            
+           {JSON.stringify(events, null, 2)}
+
           </div>  
         </section>
       </main>

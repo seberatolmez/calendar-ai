@@ -45,3 +45,5 @@ export async function Post( request: NextRequest) {
         });
     }
 }
+
+export { Post as POST };

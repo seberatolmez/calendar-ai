@@ -13,7 +13,25 @@ const model= genAI.getGenerativeModel({ model: 'gemini-2.0-flash',
 
  }); 
 
-export async function parseEventFromPrompt(rawText: String){
+export class InvalidAIJsonError extends Error {
+    raw: string;
+    constructor(raw: string) {
+        super('Invalid JSON from AI');
+        this.raw = raw;
+        this.name = 'InvalidAIJsonError';
+    }
+}
+
+function sanitizePotentialJson(text: string): string {
+    const trimmed = text.trim();
+    if (trimmed.startsWith('```')) {
+        // Remove ```json or ``` and trailing ```
+        return trimmed.replace(/^```[a-zA-Z]*\n?/, '').replace(/\n?```$/, '').trim();
+    }
+    return trimmed;
+}
+
+export async function parseEventFromPrompt(rawText: string){
 
     const prompt= `You are an expert calendar assistant. 
     Your task is to extract event details from user input 
@@ -35,7 +53,7 @@ export async function parseEventFromPrompt(rawText: String){
         "timeZone": string
         },
         "recurrence": string[],
-        "attendees": [{"email": string}][],
+        "attendees": [{"email": string}],
         "reminders": {
         "useDefault": boolean,
         "overrides": [{"method": string, "minutes": number}][]
@@ -44,13 +62,19 @@ export async function parseEventFromPrompt(rawText: String){
 
     If any detail is missing or cannot be determined from the input, use sensible defaults or leave them empty.
     
-    provide only the JSON object as output without any additional text or explanation.`
+    Output only the JSON object without any additional text, explanation, or code fences.`
 
     try {   
 
-        const response = await model.generateContent(prompt);
-        console.log('AI Response:', response); // to test 
-        return response;
+        const result = await model.generateContent(prompt);
+        const text = result.response.text();
+        const cleaned = sanitizePotentialJson(text);
+        try {
+            const parsed = JSON.parse(cleaned);
+            return parsed;
+        } catch {
+            throw new InvalidAIJsonError(cleaned);
+        }
         
     } catch (error) {
 

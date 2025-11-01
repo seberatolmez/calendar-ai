@@ -171,7 +171,7 @@ export default function Home() {
           </PromptInputToolbar>
            </PromptInput>
             
-           {JSON.stringify(events, null, 2)}
+           {JSON.stringify(events[events.length - 1], null, 2)}
 
           </div>  
         </section>

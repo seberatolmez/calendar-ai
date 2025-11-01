@@ -3,6 +3,7 @@
 import {GoogleGenerativeAI } from "@google/generative-ai";
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+const dateTime = new Date().toISOString();
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY || '');
 const model= genAI.getGenerativeModel({ model: 'gemini-2.0-flash',
     tools: [
@@ -38,6 +39,7 @@ export async function parseEventFromPrompt(rawText: string){
     and format them into a structured JSON object suitable with calendar_v3.Schema$Event for create and update operations on event.
 
     Here is the user input: "${rawText}"
+    Here is the current date and time for user's timezone: "${dateTime}"
     
     Extract the following details if avaliable as a JSON object:
    {

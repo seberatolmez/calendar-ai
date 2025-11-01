@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
         const response = await parseEventFromPrompt( await request.text());
         return NextResponse.json({
             success: true,
-                response
+              response
         }, {
             status: 200
         });

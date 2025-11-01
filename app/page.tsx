@@ -45,6 +45,32 @@ export default function Home() {
     }
   }, [session?.accessToken]);
 
+  const handleSubmit = async () => {
+    if (!input.trim()) return;
+
+    try {
+
+      const response = await fetch("/api/parse-prompts",
+
+        {
+          method: "POST",
+          headers: {"Content-Type": "application/json",},
+          body: JSON.stringify({ prompt: input.trim() }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to submit prompt");
+      }
+
+      const data = await response.json();
+      console.log("Parsed Response:", data);
+
+    } catch (error) {
+      console.error("Error submitting prompt:", error);
+    }
+  }
+
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground">
       {/* Navbar */}
@@ -78,11 +104,10 @@ export default function Home() {
 
       {/* Main */}
       <main className="flex flex-col items-center w-full max-w-3xl mx-auto mt-32 px-6 flex-grow">
-        <div className="text-center mb-10">
           <h1 className="text-2xl font-bold mb-2">
             Welcome back{session?.user?.name ? `, ${session.user.name}` : ""} 👋
           </h1>
-          <p className="text-gray-400 text-sm">
+           { /*<p className="text-gray-400 text-sm">
             Here are your upcoming events synced from Google Calendar.
           </p>
         </div>
@@ -114,7 +139,7 @@ export default function Home() {
               ))}
             </ul>
           )}
-      </section>
+      </section> */}
       <section className="w-full mt-10">
         <div className="rounded-xl bg-muted/20 shadow-sm">
 
@@ -122,10 +147,13 @@ export default function Home() {
           <PromptInputTextarea
             value={input}
             onChange={(e) => setInput(e.currentTarget.value)}
-            placeholder="Type your message..."
+            placeholder="Type what you want to do with garbi..."
           />
           <PromptInputToolbar>
-            <PromptInputSubmit disabled={!input.trim()} />
+            <PromptInputSubmit disabled={!input.trim()}
+            onClick={handleSubmit}
+            
+            />
           </PromptInputToolbar>
            </PromptInput>
       

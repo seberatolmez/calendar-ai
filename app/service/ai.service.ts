@@ -50,11 +50,12 @@ export async function parseEventFromPrompt(rawText: String){
 
         const response = await model.generateContent(prompt);
         console.log('AI Response:', response); // to test 
+        return response;
+        
     } catch (error) {
 
         console.error('Error generating content:', error);
         throw new Error('Failed to generate content from AI model');
     }
-
 
 }

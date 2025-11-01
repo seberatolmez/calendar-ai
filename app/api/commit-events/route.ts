@@ -5,7 +5,7 @@ import { createEvent } from "@/app/service/calendar.service";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
-export async function Post( request: NextRequest) {
+export async function POST( request: NextRequest) {
 
     const session = await getServerSession(authOptions);
 
@@ -45,5 +45,3 @@ export async function Post( request: NextRequest) {
         });
     }
 }
-
-export { Post as POST };

@@ -33,6 +33,8 @@ export async function POST(request: NextRequest) {
     }
 
     const prompt: string | undefined = body?.prompt;
+    const userTimeZone: string | undefined = body?.userTimeZone;
+    const userNowISO: string | undefined = body?.userNowISO;
     if (!prompt || typeof prompt !== 'string' || !prompt.trim()) {
       return NextResponse.json(
         { error: 'Invalid body: prompt is required' },
@@ -41,7 +43,7 @@ export async function POST(request: NextRequest) {
     }
 
     try {
-      const event = await parseEventFromPrompt(prompt.trim());
+      const event = await parseEventFromPrompt(prompt.trim(), userTimeZone, userNowISO);
       return NextResponse.json(
         { success: true, event },
         { status: 200 }

@@ -50,10 +50,22 @@ export default function Home() {
     setLoading(true);
     setError(null);
     try {
+      const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const toOffsetIso = (d: Date) => {
+        const tzo = -d.getTimezoneOffset();
+        const sign = tzo >= 0 ? '+' : '-';
+        const pad = (n: number) => String(Math.floor(Math.abs(n))).padStart(2, '0');
+        return (
+          `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}` +
+          `T${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}` +
+          `${sign}${pad(tzo / 60)}:${pad(tzo % 60)}`
+        );
+      };
+      const userNowISO = toOffsetIso(new Date());
       const response = await fetch("/api/parse-prompts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt: input.trim() }),
+        body: JSON.stringify({ prompt: input.trim(), userTimeZone, userNowISO }),
       });
 
       const data = await response.json().catch(() => null);

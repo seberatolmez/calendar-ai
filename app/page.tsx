@@ -122,39 +122,7 @@ export default function Home() {
           <h1 className="text-2xl font-bold mb-2">
             Welcome back{session?.user?.name ? `, ${session.user.name}` : ""} 👋
           </h1>
-           { /*<p className="text-gray-400 text-sm">
-            Here are your upcoming events synced from Google Calendar.
-          </p>
-        </div>
-
-        <section className="flex flex-col w-full max-h-[60vh] overflow-y-auto gap-3">
-          {loading && (
-            <p className="text-gray-400 text-center">Loading events...</p>
-          )}
-          {error && <p className="text-red-500 text-center">{error}</p>}
-          {!loading && !error && events.length === 0 && (
-            <p className="text-gray-400 text-center">No upcoming events.</p>
-          )}
-          {!loading && events.length > 0 && (
-            <ul className="space-y-3">
-              {events.map((event) => (
-                <li
-                  key={event.id}
-                  className="p-4 bg-gray-900/70 border border-gray-800 rounded-xl hover:bg-gray-900 transition-all"
-                >
-                  <div className="font-semibold text-white">
-                    {event.summary}
-                  </div>
-                  {event.start?.dateTime && (
-                    <div className="text-sm text-gray-400 mt-1">
-                      {new Date(event.start.dateTime).toLocaleString()}
-                    </div>
-                  )}
-                </li>
-              ))}
-            </ul>
-          )}
-      </section> */}
+           
       <section className="w-full mt-10">
         <div className="rounded-xl bg-muted/20 shadow-sm">
 

@@ -2,9 +2,10 @@
 
 import { FunctionDeclaration, GoogleGenerativeAI, SchemaType } from "@google/generative-ai";
 import *as calendarService from "./calendar.service";
+import { Tool } from "ai";
 
 
-const tools: FunctionDeclaration[] = [   // all calendar functions 
+const calendarTools: FunctionDeclaration[] = [   // all calendar functions 
         {
             name: 'listEvents',
             description: 'list upcoming events from user primary google calendar',
@@ -65,18 +66,20 @@ const tools: FunctionDeclaration[] = [   // all calendar functions
                 required: ['eventId']
             }
         }
+     ];
 
-    ] ;
+const tools = [
+    {
+      functionDeclarations: calendarTools
+    },
+]
 
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY || '');
 const model = genAI.getGenerativeModel({
-  model: 'gemini-2.0-flash', // may use gemini 2.0 pro for better results later
-  tools: [{ 
-    functionDeclarations: tools
-
-}],
+  model: 'gemini-2.0-flash', // may use gemini pro for better results later
+  tools: tools
 });
 
 

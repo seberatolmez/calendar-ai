@@ -101,13 +101,13 @@ export default function Home() {
 
         <div className="flex items-center gap-3">
           <button
-            className="bg-[#6F55FF] hover:bg-[#5d46e0] text-white px-4 py-2 rounded-lg text-sm font-medium transition-all"
+            className="bg-[#6F55FF] hover:bg-[#5d46e0] text-white px-4 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer"
             onClick={() => window.open("https://calendar.google.com")}
           >
             Go to Calendar
           </button>
           <button
-            className="flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all"
+            className="flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer"
             onClick={handleSignOut}
             disabled={!session}
           >

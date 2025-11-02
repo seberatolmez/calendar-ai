@@ -28,24 +28,6 @@ export default function Home() {
     }
   }, [session, router]);
 
-  // useEffect(() => {
-  //   if (session?.accessToken) {
-  //     setLoading(true);
-  //     fetch("/api/calendar/list?maxResults=10")
-  //       .then((res) => res.json())
-  //       .then((data) => {
-  //         if (data.success) {
-  //           setEvents(data.events);
-  //           setError(null);
-  //         } else {
-  //           setError(data.error);
-  //         }
-  //       })
-  //       .catch(() => setError("Failed to load events"))
-  //       .finally(() => setLoading(false));
-  //   }
-  // }, [session?.accessToken]);
-
   const handleSubmit = async () => {
     if (!input.trim()) return;
     setLoading(true);

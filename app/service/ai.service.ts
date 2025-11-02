@@ -1,13 +1,85 @@
 // ai service to parsing and crud operations for calendar events
 
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { FunctionDeclaration, GoogleGenerativeAI, SchemaType } from "@google/generative-ai";
+import *as calendarService from "./calendar.service";
+
+
+const tools: FunctionDeclaration[] = [   // all calendar functions 
+        {
+            name: 'listEvents',
+            description: 'list upcoming events from user primary google calendar',
+            parameters: {
+                type: SchemaType.OBJECT,
+                properties: {
+                    maxResults: {
+                        type: SchemaType.INTEGER,
+                        description: 'maximum number of events to retrieve'
+                    }
+                },
+                // no required if not specified, default '10'
+            }
+        },
+        {
+            name: 'createEvent',
+            description: 'create a new event in user primary google calendar',
+            parameters: {
+                type: SchemaType.OBJECT,
+                properties: {
+                    event : {
+                        type: SchemaType.STRING,
+                        description: 'event object compatible with Google Calendar API (calendar_v3.Schema$Event)',
+                    }
+                },
+                required: ['event']
+            }
+        },
+        {
+            name: 'updateEvent',
+            description: 'update an existing event in user primary google calendar',
+            parameters: {
+                type: SchemaType.OBJECT,
+                properties: {
+                    eventId: {
+                        type: SchemaType.STRING,
+                        description: 'ID of the event to update'
+                    },
+                    updatedEvent: {
+                        type: SchemaType.STRING,
+                        description: 'updated event object compatible with Google Calendar API (calendar_v3.Schema$Event)'
+                    }
+                },
+                required: ['eventId', 'updatedEvent']
+            }
+        },
+        {
+            name: 'deleteEvent',
+            description: 'delete an event from user primary google calendar',
+            parameters: {
+                type: SchemaType.OBJECT,
+                properties: {
+                    eventId: {
+                        type: SchemaType.STRING,
+                        description: 'ID of the event to delete'
+                    }
+                },
+                required: ['eventId']
+            }
+        }
+
+    ] ;
+
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY || '');
 const model = genAI.getGenerativeModel({
-  model: 'gemini-2.0-flash',
-  tools: [{ codeExecution: {} }],
+  model: 'gemini-2.0-flash', // may use gemini 2.0 pro for better results later
+  tools: [{ 
+    functionDeclarations: tools
+
+}],
 });
+
+
 
 export class InvalidAIJsonError extends Error {
   raw: string;

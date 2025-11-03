@@ -74,7 +74,7 @@ const tools = [
     },
 ]
 
-
+const accessToken; //TODO: implement later 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY || '');
 const model = genAI.getGenerativeModel({
@@ -199,4 +199,43 @@ Critical rules:
     console.error('Error generating or parsing event:', error);
     throw new Error('Failed to parse event from AI response.');
   }
+}
+
+export async function handleUserPrompt(prompt: string) { // passed access token now
+  
+  try {
+    
+    const result = await model.generateContent({
+      contents: [
+        {
+          role: 'user',parts: [{ text: prompt  }]}
+      ]
+    });
+
+    const functionCalls = result.response.functionCalls();
+
+
+    if(!functionCalls || functionCalls.length===0) {
+       const text = result.response.text;
+       return {type: "text", message: text};
+    }
+
+    const {name,args} = functionCalls;
+
+    switch(name) {
+        case "list_events":
+          return await calendarService.listEvents(accessToken,args.maxResults);
+        case "create_event":
+          return await calendarService.createEvent(accessToken, args);
+        case "update_event":
+          return await calendarService.updateEvent(accessToken, args.eventId, args.updatedFields);
+        case "delete_event":
+          return await calendarService.deleteEvent(accessToken, args.eventId);
+        default:
+          throw new Error(`Unknown tool: ${name}`);
+    }
+
+  }
+
+
 }

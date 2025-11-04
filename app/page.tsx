@@ -45,19 +45,21 @@ export default function Home() {
         return;
       }
 
-      console.log("Parsed Event:", data?.event);
-      setEvents((prev) => [...prev, data.event]);
-
-      // commit event to calendar (test)
-      try {
-            await fetch("/api/commit-events", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data?.event),
-      }); 
-      } catch (commitError) {
-            console.error("Error committing event to calendar:", commitError);
+      // Handle different response types
+      if (data.type === "events") {
+        console.log("Events:", data.events);
+        setEvents((prev) => [...prev, ...data.events]);
+      } else if (data.type === "event") {
+        console.log("Event:", data.event);
+        setEvents((prev) => [...prev, data.event]);
+      } else if (data.type === "success") {
+        console.log("Success:", data.message);
+      } else if (data.type === "text") {
+        console.log("Message:", data.message);
       }
+
+      // Clear input after successful submission
+      setInput("");
 
 
     } catch (err) {

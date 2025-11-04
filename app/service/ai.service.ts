@@ -2,7 +2,6 @@
 
 import { FunctionDeclaration, GoogleGenerativeAI, SchemaType } from "@google/generative-ai";
 import *as calendarService from "./calendar.service";
-import { Tool } from "ai";
 
 
 const calendarTools: FunctionDeclaration[] = [   // all calendar functions 
@@ -74,7 +73,6 @@ const tools = [
     },
 ]
 
-const accessToken; //TODO: implement later 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY || '');
 const model = genAI.getGenerativeModel({
@@ -201,41 +199,67 @@ Critical rules:
   }
 }
 
-export async function handleUserPrompt(prompt: string) { // passed access token now
-  
+export async function handleUserPrompt(prompt: string, accessToken: string) {
   try {
-    
     const result = await model.generateContent({
       contents: [
         {
-          role: 'user',parts: [{ text: prompt  }]}
+          role: 'user',
+          parts: [{ text: prompt }]
+        }
       ]
     });
 
     const functionCalls = result.response.functionCalls();
 
-
-    if(!functionCalls || functionCalls.length===0) {
-       const text = result.response.text;
-       return {type: "text", message: text};
+    if (!functionCalls || functionCalls.length === 0) {
+      const text = result.response.text();
+      return { type: "text", message: text };
     }
 
-    const {name,args} = functionCalls;
+    const functionCall = functionCalls[0];
+    const { name, args } = functionCall;
+    const argsTyped = args as any;
 
-    switch(name) {
-        case "list_events":
-          return await calendarService.listEvents(accessToken,args.maxResults);
-        case "create_event":
-          return await calendarService.createEvent(accessToken, args);
-        case "update_event":
-          return await calendarService.updateEvent(accessToken, args.eventId, args.updatedFields);
-        case "delete_event":
-          return await calendarService.deleteEvent(accessToken, args.eventId);
-        default:
-          throw new Error(`Unknown tool: ${name}`);
+    switch (name) {
+      case "listEvents": {
+        const maxResults = argsTyped.maxResults || 10;
+        const events = await calendarService.listEvents(accessToken, maxResults);
+        return { type: "events", events };
+      }
+      case "createEvent": {
+        let eventData;
+        try {
+          eventData = typeof argsTyped.event === 'string' 
+            ? JSON.parse(argsTyped.event) 
+            : argsTyped.event;
+        } catch (parseError) {
+          throw new Error('Invalid event JSON format');
+        }
+        const result = await calendarService.createEvent(accessToken, eventData);
+        return { type: "event", event: result.event, message: result.message };
+      }
+      case "updateEvent": {
+        let updatedEventData;
+        try {
+          updatedEventData = typeof argsTyped.updatedEvent === 'string' 
+            ? JSON.parse(argsTyped.updatedEvent) 
+            : argsTyped.updatedEvent;
+        } catch (parseError) {
+          throw new Error('Invalid updatedEvent JSON format');
+        }
+        const result = await calendarService.updateEvent(accessToken, argsTyped.eventId, updatedEventData);
+        return { type: "event", event: result.event, message: result.message };
+      }
+      case "deleteEvent": {
+        const result = await calendarService.deleteEvent(accessToken, argsTyped.eventId);
+        return { type: "success", message: result.message };
+      }
+      default:
+        throw new Error(`Unknown tool: ${name}`);
     }
-
+  } catch (error) {
+    console.error('Error handling user prompt:', error);
+    throw error;
   }
-
-
 }

@@ -56,6 +56,9 @@ export default function Home() {
         console.log("Success:", data.message);
       } else if (data.type === "text") {
         console.log("Message:", data.message);
+      } else if (data.type === "disambiguation") {
+        console.log("Disambiguation needed:", data.candidates);
+        setError(`Multiple matches found. Please be more specific. Found ${data.candidates.length} events.`);
       }
 
       // Clear input after successful submission
@@ -131,7 +134,19 @@ export default function Home() {
           </PromptInputToolbar>
            </PromptInput>
             
-           {JSON.stringify(events[events.length - 1], null, 2)}
+           {error && (
+             <div className="mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded text-sm">
+               {error}
+             </div>
+           )}
+           
+           {events.length > 0 && (
+             <div className="mt-4 p-4">
+               <pre className="text-xs overflow-auto">
+                 {JSON.stringify(events[events.length - 1], null, 2)}
+               </pre>
+             </div>
+           )}
 
           </div>  
         </section>

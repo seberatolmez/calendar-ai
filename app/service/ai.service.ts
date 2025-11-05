@@ -43,12 +43,20 @@ const calendarTools: FunctionDeclaration[] = [   // all calendar functions
                         type: SchemaType.STRING,
                         description: 'ID of the event to update'
                     },
+                    q: {
+                        type: SchemaType.STRING,
+                        description: 'free-text search to find the event when ID is unknown (summary, description, location, attendees)'
+                    },
+                    date: {
+                        type: SchemaType.STRING,
+                        description: 'date of the event (YYYY-MM-DD) to narrow the search'
+                    },
                     updatedEvent: {
                         type: SchemaType.STRING,
                         description: 'updated event object compatible with Google Calendar API (calendar_v3.Schema$Event)'
                     }
                 },
-                required: ['eventId', 'updatedEvent']
+                required: ['updatedEvent']
             }
         },
         {
@@ -255,7 +263,58 @@ export async function handleUserPrompt(prompt: string, accessToken: string) {
         } catch (parseError) {
           throw new Error('Invalid updatedEvent JSON format');
         }
-        const result = await calendarService.updateEvent(accessToken, argsTyped.eventId, updatedEventData);
+
+        let eventId = (argsTyped.eventId as string | undefined)?.trim();
+        
+        if (!eventId) {
+          const q = (argsTyped.q as string | undefined)?.trim();
+          const date = (argsTyped.date as string | undefined)?.trim();
+          
+          if (!q && !date) {
+            throw new Error('Either eventId or search criteria (q/date) must be provided');
+          }
+
+          const candidates = await calendarService.findEventsByQuery(accessToken, {
+            q,
+            date,
+            maxLookAheadDays: 30
+          });
+
+          if (candidates.length === 0) {
+            return {
+              type: "text",
+              message: "No events found matching the criteria to update."
+            };
+          }
+          
+          if (candidates.length > 1) {
+            return {
+              type: "disambiguation",
+              message: "Multiple matching events found. Please choose which to update.",
+              candidates: candidates.map(event => ({
+                id: event.id,
+                summary: event.summary,
+                start: event.start?.dateTime,
+                end: event.end?.dateTime,
+              }))
+            };
+          }
+
+          eventId = candidates[0].id!;
+        }
+
+        // Fetch existing event to merge changes
+        const existingEvent = await calendarService.getEventById(accessToken, eventId);
+        
+        // Merge: updatedEventData overrides existingEvent fields
+        const mergedEvent = {
+          ...existingEvent,
+          ...updatedEventData,
+          id: existingEvent.id,
+          etag: existingEvent.etag,
+        };
+
+        const result = await calendarService.updateEvent(accessToken, eventId, mergedEvent);
         return { type: "event", event: result.event, message: result.message };
       }
       case "deleteEvent": {

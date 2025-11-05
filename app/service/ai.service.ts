@@ -259,8 +259,45 @@ export async function handleUserPrompt(prompt: string, accessToken: string) {
         return { type: "event", event: result.event, message: result.message };
       }
       case "deleteEvent": {
-        const result = await calendarService.deleteEvent(accessToken, argsTyped.eventId);
-        return { type: "success", message: result.message };
+        const eventId = (argsTyped.eventId as string | undefined)?.trim();
+        if(eventId) {
+          const result = await calendarService.deleteEvent(accessToken, argsTyped.eventId);
+          return { type: "success", message: result.message };
+        }
+
+        const q = (argsTyped.q as string | undefined)?.trim();
+        const date = (argsTyped.date as string | undefined)?.trim();
+
+        const candidates = await calendarService.findEventsByQuery(accessToken,
+           {q,date, maxLookAheadDays: 30}
+        );
+
+        if(candidates.length === 0) {
+          return {
+            type: "text",
+            message: "No events found matching the criteria to delete."
+          };
+
+        }
+        // if only one candidate
+        if(candidates.length === 1) {
+          const deletedEventId = candidates[0].id!;
+          const result = await calendarService.deleteEvent(accessToken,deletedEventId);
+          return { type: "success", message: result.message, deletedEventId: deletedEventId };
+        }
+
+        // if multiple candidates, for now delete just one
+        return {
+          type: "disambiguation",
+          message: "Multiple matching events found. Please choose which to delete.",
+          candidates: candidates.map(event => ({ // mapping these 4 fields
+            id: event.id,
+            summary: event.summary,
+            start: event.start?.dateTime,
+            end: event.end?.dateTime,
+          }))
+        }
+
       }
       default:
         throw new Error(`Unknown tool: ${name}`);

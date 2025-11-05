@@ -5,6 +5,44 @@ import { google, calendar_v3 } from 'googleapis';
 const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
 
+function startOfDay(date: string) {
+    const d = new Date(date + 'T00:00:00');
+    return d.toISOString();
+}
+
+function endOfDay(date: string) {
+    const d = new Date(date + 'T23:59:59');
+    return d.toISOString();
+}
+
+export async function findEventsByQuery(
+    accessToken: string,
+    options: {
+        q?: string;
+        date?: string;
+        maxLookAheadDays?: number;
+    }
+) {
+
+    const calendarClient = getCalendarClient(accessToken);
+    const now = new Date();
+    const lookAhead = new Date(now);
+    lookAhead.setDate(lookAhead.getDate() + (options.maxLookAheadDays ?? 30));
+    
+    const timeMin = options.date ? startOfDay(options.date) : now.toISOString();
+    const timeMax = options.date ? endOfDay(options.date) : lookAhead.toISOString();
+  
+    const response = await calendarClient.events.list({
+        calendarId: 'primary',
+        timeMin,
+        timeMax,
+        singleEvents: true,
+        orderBy: 'startTime',
+        maxResults: 50,
+        q: options.q,
+    });
+}
+
 function getCalendarClient(accessToken: string) {
     const client = new google.auth.OAuth2(
         CLIENT_ID!,

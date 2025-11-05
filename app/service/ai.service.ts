@@ -54,15 +54,22 @@ const calendarTools: FunctionDeclaration[] = [   // all calendar functions
         {
             name: 'deleteEvent',
             description: 'delete an event from user primary google calendar',
-            parameters: {
-                type: SchemaType.OBJECT,
-                properties: {
-                    eventId: {
-                        type: SchemaType.STRING,
-                        description: 'ID of the event to delete'
-                    }
+            parameters:  {
+              type: SchemaType.OBJECT,
+              properties: {
+                eventId: {
+                  type: SchemaType.STRING,
+                  description: 'ID of the event to delete'
                 },
-                required: ['eventId']
+                q: {
+                  type: SchemaType.STRING,
+                  description: 'free-text search to find the event when ID is unknown (summary, description, location, attendees)'
+                },
+                date: {
+                  type: SchemaType.STRING,
+                  description: 'date of the event (YYYY-MM-DD) to narrow the search'
+                }
+              }
             }
         }
      ];

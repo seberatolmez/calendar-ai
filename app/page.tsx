@@ -144,7 +144,8 @@ export default function Home() {
            
              <div className="mt-4 p-4">
                <pre className="text-xs overflow-auto">
-                 {events.length > 0 ? (JSON.stringify(events[events.length - 1], null, 2)) : `${data.message}`
+                 {
+                  typeof data === 'string' ? data : JSON.stringify(data, null, 2)
                  }
                </pre>
              </div>

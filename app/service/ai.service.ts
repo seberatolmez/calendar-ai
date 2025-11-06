@@ -200,7 +200,21 @@ When you need to pass an event object to createEvent or updateEvent, convert the
 
 
   try {
-    const result = await model.generateContent(prompt);
+    const result = await model.generateContent({
+      contents: [
+         {
+            role: 'system',
+            parts: [{ text: prompt }]
+         },
+
+         {
+          role: 'user',
+          parts: [{ text: rawText }]
+         }
+
+      ]
+
+    });
     const text = result.response.text();
     const cleaned = sanitizePotentialJson(text);
 

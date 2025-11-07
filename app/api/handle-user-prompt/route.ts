@@ -40,8 +40,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const timeZone: string | undefined = body?.timeZone;
+
     try {
-      const result = await handleUserPrompt(prompt.trim(), session.accessToken);
+      const result = await handleUserPrompt(prompt.trim(), session.accessToken, timeZone);
       return NextResponse.json(
         { success: true, ...result },
         { status: 200 }

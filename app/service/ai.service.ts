@@ -25,12 +25,32 @@ const calendarTools: FunctionDeclaration[] = [   // all calendar functions
             parameters: {
                 type: SchemaType.OBJECT,
                 properties: {
-                    event : {
+                    summary: {
                         type: SchemaType.STRING,
-                        description: 'event object compatible with Google Calendar API (calendar_v3.Schema$Event)',
+                        description: 'Event title/summary'
+                    },
+                    description: {
+                        type: SchemaType.STRING,
+                        description: 'Event description'
+                    },
+                    location: {
+                        type: SchemaType.STRING,
+                        description: 'Event location'
+                    },
+                    startDateTime: {
+                        type: SchemaType.STRING,
+                        description: 'Start date and time in ISO 8601 format (YYYY-MM-DDTHH:mm:ss)'
+                    },
+                    endDateTime: {
+                        type: SchemaType.STRING,
+                        description: 'End date and time in ISO 8601 format (YYYY-MM-DDTHH:mm:ss)'
+                    },
+                    timeZone: {
+                        type: SchemaType.STRING,
+                        description: 'IANA time zone identifier (e.g., America/New_York, Europe/London)'
                     }
                 },
-                required: ['event']
+                required: ['summary', 'startDateTime', 'endDateTime', 'timeZone']
             }
         },
         {
@@ -51,12 +71,31 @@ const calendarTools: FunctionDeclaration[] = [   // all calendar functions
                         type: SchemaType.STRING,
                         description: 'date of the event (YYYY-MM-DD) to narrow the search'
                     },
-                    updatedEvent: {
+                    summary: {
                         type: SchemaType.STRING,
-                        description: 'updated event object compatible with Google Calendar API (calendar_v3.Schema$Event)'
+                        description: 'Updated event title/summary'
+                    },
+                    description: {
+                        type: SchemaType.STRING,
+                        description: 'Updated event description'
+                    },
+                    location: {
+                        type: SchemaType.STRING,
+                        description: 'Updated event location'
+                    },
+                    startDateTime: {
+                        type: SchemaType.STRING,
+                        description: 'Updated start date and time in ISO 8601 format (YYYY-MM-DDTHH:mm:ss)'
+                    },
+                    endDateTime: {
+                        type: SchemaType.STRING,
+                        description: 'Updated end date and time in ISO 8601 format (YYYY-MM-DDTHH:mm:ss)'
+                    },
+                    timeZone: {
+                        type: SchemaType.STRING,
+                        description: 'IANA time zone identifier (e.g., America/New_York, Europe/London)'
                     }
-                },
-                required: ['updatedEvent']
+                }
             }
         },
         {
@@ -95,8 +134,25 @@ const model = genAI.getGenerativeModel({
   tools: tools
 });
 
-export async function handleUserPrompt(prompt: string, accessToken: string) {
+export async function handleUserPrompt(prompt: string, accessToken: string, userTimeZone?: string) {
   try {
+    // Use provided timezone or default to UTC
+    const timeZone = userTimeZone || 'UTC';
+    console.log('User timezone:', timeZone);
+    
+    const now = new Date();
+    const currentTimeInTZ = new Intl.DateTimeFormat('en-US', {
+      timeZone: timeZone,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    }).format(now);
+    
+    console.log('Current time in user timezone:', currentTimeInTZ);
+
     const systemInstruction = `
 You are Garbi, an intelligent AI assistant that helps users manage their Google Calendar through natural language.
 
@@ -120,35 +176,30 @@ You can call these tools to perform operations:
 
 ### Event Creation / Update Structure
 
-When you need to pass an event object to createEvent or updateEvent, convert the user's description into a JSON object compatible with Google Calendar API:
+When calling createEvent or updateEvent, provide the following parameters:
+- summary: Event title (required for createEvent)
+- description: Event description (optional)
+- location: Event location (optional)
+- startDateTime: Start time in ISO 8601 format (YYYY-MM-DDTHH:mm:ss) - REQUIRED
+- endDateTime: End time in ISO 8601 format (YYYY-MM-DDTHH:mm:ss) - REQUIRED
+- timeZone: IANA time zone identifier (e.g., "America/New_York", "Europe/London") - REQUIRED for createEvent
 
-{
-  "summary": string,
-  "location": string,
-  "description": string,
-  "start": {
-    "dateTime": string (YYYY-MM-DDTHH:mm:ss, local wall time),
-    "timeZone": string (exactly the user's IANA time zone)
-  },
-  "end": {
-    "dateTime": string (YYYY-MM-DDTHH:mm:ss, local wall time),
-    "timeZone": string (exactly the user's IANA time zone)
-  },
-  "recurrence": string[],
-  "attendees": [{"email": string}],
-  "reminders": {
-    "useDefault": boolean,
-    "overrides": [{"method": string, "minutes": number}][]
-  }
-}
+Example: If user says "schedule tennis tomorrow at 8am for 1.5 hours":
+- summary: "Tennis"
+- startDateTime: "2024-12-XXT08:00:00" (resolve tomorrow's date)
+- endDateTime: "2024-12-XXT09:30:00" (1.5 hours later)
+- timeZone: "${timeZone}" (MUST use this exact timezone)
 
 ---
 
 ### Critical Constraints
 
-- Interpret all times in the user's local time zone. Use IANA time zone identifiers (e.g., "America/New_York", "Europe/London").
-- NEVER use UTC or add "Z" to times unless explicitly requested.
-- If the user says "today", "tomorrow", or "evening", resolve it to a specific date/time in the user's time zone.
+- User's time zone: **${timeZone}**
+- Current time in user's time zone: **${currentTimeInTZ}**
+- ALWAYS use the timezone "${timeZone}" when creating or updating events.
+- Interpret all times in the user's local time zone: **${timeZone}**. NEVER guess or use a different timezone.
+- NEVER use UTC or add "Z" to times unless explicitly requested by the user.
+- If the user says "today", "tomorrow", or "evening", resolve it to a specific date/time in timezone: **${timeZone}**
 - When unsure which event to modify/delete, use search parameters ('q', 'date') instead of assuming IDs.
 - When the user only greets you or makes small talk, reply with short plain text without calling any tools.
 `;
@@ -171,14 +222,19 @@ When you need to pass an event object to createEvent or updateEvent, convert the
 
     const functionCalls = result.response.functionCalls();
 
+    console.log('Function calls received:', JSON.stringify(functionCalls, null, 2));
+
     if (!functionCalls || functionCalls.length === 0) {
       const text = result.response.text();
+      console.log('No function calls, returning text response:', text);
       return { type: "text", message: text };
     }
 
     const functionCall = functionCalls[0];
     const { name, args } = functionCall;
     const argsTyped = args as any;
+    
+    console.log(`Calling function: ${name}`, 'with args:', JSON.stringify(argsTyped, null, 2));
 
     switch (name) {
       case "listEvents": {
@@ -187,79 +243,123 @@ When you need to pass an event object to createEvent or updateEvent, convert the
         return { type: "events", events };
       }
       case "createEvent": {
-        let eventData;
         try {
-          eventData = typeof argsTyped.event === 'string' 
-            ? JSON.parse(argsTyped.event) 
-            : argsTyped.event;
-        } catch (parseError) {
-          throw new Error('Invalid event JSON format');
+          // Use user's timezone if AI didn't provide one
+          const eventTimeZone = argsTyped.timeZone || userTimeZone || 'UTC';
+          
+          // Build event object from function arguments
+          const eventData = {
+            summary: argsTyped.summary || 'Untitled Event',
+            description: argsTyped.description || '',
+            location: argsTyped.location || '',
+            start: {
+              dateTime: argsTyped.startDateTime,
+              timeZone: eventTimeZone
+            },
+            end: {
+              dateTime: argsTyped.endDateTime,
+              timeZone: eventTimeZone
+            }
+          };
+
+          console.log('Creating event with data:', JSON.stringify(eventData, null, 2));
+
+          if (!eventData.start.dateTime || !eventData.end.dateTime) {
+            throw new Error('Missing required fields: startDateTime and endDateTime are required');
+          }
+
+          const result = await calendarService.createEvent(accessToken, eventData);
+          console.log('Event created successfully:', result.event?.id);
+          return { type: "event", event: result.event, message: result.message };
+        } catch (error) {
+          console.error('Error in createEvent case:', error);
+          throw error;
         }
-        const result = await calendarService.createEvent(accessToken, eventData);
-        return { type: "event", event: result.event, message: result.message };
       }
       case "updateEvent": {
-        let updatedEventData;
         try {
-          updatedEventData = typeof argsTyped.updatedEvent === 'string' 
-            ? JSON.parse(argsTyped.updatedEvent) 
-            : argsTyped.updatedEvent;
-        } catch (parseError) {
-          throw new Error('Invalid updatedEvent JSON format');
-        }
-
-        let eventId = (argsTyped.eventId as string | undefined)?.trim();
-        
-        if (!eventId) {
-          const q = (argsTyped.q as string | undefined)?.trim();
-          const date = (argsTyped.date as string | undefined)?.trim();
+          let eventId = (argsTyped.eventId as string | undefined)?.trim();
           
-          if (!q && !date) {
-            throw new Error('Either eventId or search criteria (q/date) must be provided');
+          if (!eventId) {
+            const q = (argsTyped.q as string | undefined)?.trim();
+            const date = (argsTyped.date as string | undefined)?.trim();
+            
+            if (!q && !date) {
+              throw new Error('Either eventId or search criteria (q/date) must be provided');
+            }
+
+            const candidates = await calendarService.findEventsByQuery(accessToken, {
+              q,
+              date,
+              maxLookAheadDays: 30
+            });
+
+            if (candidates.length === 0) {
+              return {
+                type: "text",
+                message: "No events found matching the criteria to update."
+              };
+            }
+            
+            if (candidates.length > 1) {
+              return {
+                type: "disambiguation",
+                message: "Multiple matching events found. Please choose which to update.",
+                candidates: candidates.map(event => ({
+                  id: event.id,
+                  summary: event.summary,
+                  start: event.start?.dateTime,
+                  end: event.end?.dateTime,
+                }))
+              };
+            }
+
+            eventId = candidates[0].id!;
           }
 
-          const candidates = await calendarService.findEventsByQuery(accessToken, {
-            q,
-            date,
-            maxLookAheadDays: 30
-          });
+          if (!eventId) {
+            throw new Error('Event ID is required to update event');
+          }
 
-          if (candidates.length === 0) {
-            return {
-              type: "text",
-              message: "No events found matching the criteria to update."
+          // Fetch existing event to merge changes
+          const existingEvent = await calendarService.getEventById(accessToken, eventId);
+          
+          // Build updated event data from function arguments
+          const updatedEventData: any = {};
+          
+          if (argsTyped.summary !== undefined) updatedEventData.summary = argsTyped.summary;
+          if (argsTyped.description !== undefined) updatedEventData.description = argsTyped.description;
+          if (argsTyped.location !== undefined) updatedEventData.location = argsTyped.location;
+          if (argsTyped.startDateTime) {
+            updatedEventData.start = {
+              dateTime: argsTyped.startDateTime,
+              timeZone: argsTyped.timeZone || userTimeZone || existingEvent.start?.timeZone || 'UTC'
+            };
+          }
+          if (argsTyped.endDateTime) {
+            updatedEventData.end = {
+              dateTime: argsTyped.endDateTime,
+              timeZone: argsTyped.timeZone || userTimeZone || existingEvent.end?.timeZone || 'UTC'
             };
           }
           
-          if (candidates.length > 1) {
-            return {
-              type: "disambiguation",
-              message: "Multiple matching events found. Please choose which to update.",
-              candidates: candidates.map(event => ({
-                id: event.id,
-                summary: event.summary,
-                start: event.start?.dateTime,
-                end: event.end?.dateTime,
-              }))
-            };
-          }
+          // Merge: updatedEventData overrides existingEvent fields
+          const mergedEvent = {
+            ...existingEvent,
+            ...updatedEventData,
+            id: existingEvent.id,
+            etag: existingEvent.etag,
+          };
 
-          eventId = candidates[0].id!;
+          console.log('Updating event with data:', JSON.stringify(mergedEvent, null, 2));
+
+          const result = await calendarService.updateEvent(accessToken, eventId, mergedEvent);
+          console.log('Event updated successfully:', result.event?.id);
+          return { type: "event", event: result.event, message: result.message };
+        } catch (error) {
+          console.error('Error in updateEvent case:', error);
+          throw error;
         }
-
-        // Fetch existing event to merge changes
-        const existingEvent = await calendarService.getEventById(accessToken, eventId);
-        
-        // Merge: updatedEventData overrides existingEvent fields
-        const mergedEvent = {
-          ...existingEvent,
-          ...updatedEventData,
-          id: existingEvent.id,
-          etag: existingEvent.etag,
-        };
-
-        const result = await calendarService.updateEvent(accessToken, eventId, mergedEvent);
-        return { type: "event", event: result.event, message: result.message };
       }
       case "deleteEvent": {
         const eventId = (argsTyped.eventId as string | undefined)?.trim();

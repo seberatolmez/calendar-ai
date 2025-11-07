@@ -34,10 +34,16 @@ export default function Home() {
     setLoading(true);
     setError(null);
     try {
+      // Get user's timezone from browser
+      const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      
       const response = await fetch("/api/handle-user-prompt", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt: input.trim() }),
+        body: JSON.stringify({ 
+          prompt: input.trim(),
+          timeZone: userTimeZone
+        }),
       });
 
       data = await response.json().catch(() => null);

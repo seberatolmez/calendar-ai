@@ -1,7 +1,7 @@
-// parse prompts from user and return parsed events
+// parse prompts from user and handle function calling for calendar operations
 
 import { NextRequest, NextResponse } from 'next/server';
-import { parseEventFromPrompt, InvalidAIJsonError } from '@/app/service/ai.service';
+import { handleUserPrompt } from '@/app/service/ai.service';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../auth/[...nextauth]/route';
 
@@ -33,8 +33,6 @@ export async function POST(request: NextRequest) {
     }
 
     const prompt: string | undefined = body?.prompt;
-    const userTimeZone: string | undefined = body?.userTimeZone;
-    const userNowISO: string | undefined = body?.userNowISO;
     if (!prompt || typeof prompt !== 'string' || !prompt.trim()) {
       return NextResponse.json(
         { error: 'Invalid body: prompt is required' },
@@ -43,21 +41,15 @@ export async function POST(request: NextRequest) {
     }
 
     try {
-      const event = await parseEventFromPrompt(prompt.trim(), userTimeZone, userNowISO);
+      const result = await handleUserPrompt(prompt.trim(), session.accessToken);
       return NextResponse.json(
-        { success: true, event },
+        { success: true, ...result },
         { status: 200 }
       );
     } catch (error) {
-      console.error('Error parsing prompts:', error);
-      if (error instanceof InvalidAIJsonError) {
-        return NextResponse.json(
-          { success: false, error: 'AI returned invalid JSON', raw: error.raw },
-          { status: 422 }
-        );
-      }
+      console.error('Error handling prompt:', error);
       return NextResponse.json(
-        { success: false, error: 'Failed to parse prompts' },
+        { success: false, error: error instanceof Error ? error.message : 'Failed to handle prompt' },
         { status: 500 }
       );
     }

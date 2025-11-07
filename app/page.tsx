@@ -21,6 +21,7 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [events, setEvents] = useState<any[]>([]);
   const developerEmail = process.env.NEXT_PUBLIC_DEVELOPER_EMAIL;
+  let data: any = null;
 
   useEffect(() => {
     if (!session) {
@@ -28,54 +29,41 @@ export default function Home() {
     }
   }, [session, router]);
 
-  // useEffect(() => {
-  //   if (session?.accessToken) {
-  //     setLoading(true);
-  //     fetch("/api/calendar/list?maxResults=10")
-  //       .then((res) => res.json())
-  //       .then((data) => {
-  //         if (data.success) {
-  //           setEvents(data.events);
-  //           setError(null);
-  //         } else {
-  //           setError(data.error);
-  //         }
-  //       })
-  //       .catch(() => setError("Failed to load events"))
-  //       .finally(() => setLoading(false));
-  //   }
-  // }, [session?.accessToken]);
-
   const handleSubmit = async () => {
     if (!input.trim()) return;
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch("/api/parse-prompts", {
+      const response = await fetch("/api/handle-user-prompt", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt: input.trim() }),
+        body: JSON.stringify({ prompt: input.trim }),
       });
 
-      const data = await response.json().catch(() => null);
+      data = await response.json().catch(() => null);
       if (!response.ok) {
         setError((data && data.error) || "Failed to submit prompt");
         return;
       }
 
-      console.log("Parsed Event:", data?.event);
-      setEvents((prev) => [...prev, data.event]);
-
-      // commit event to calendar (test)
-      try {
-            await fetch("/api/commit-events", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data?.event),
-      }); 
-      } catch (commitError) {
-            console.error("Error committing event to calendar:", commitError);
+      // Handle different response types
+      if (data.type === "events") {
+        console.log("Events:", data.events);
+        setEvents((prev) => [...prev, ...data.events]);
+      } else if (data.type === "event") {
+        console.log("Event:", data.event);
+        setEvents((prev) => [...prev, data.event]);
+      } else if (data.type === "success") {
+        console.log("Success:", data.message);
+      } else if (data.type === "text") {
+        console.log("Message:", data.message);
+      } else if (data.type === "disambiguation") {
+        console.log("Disambiguation needed:", data.candidates);
+        setError(`Multiple matches found. Please be more specific. Found ${data.candidates.length} events.`);
       }
+
+      // Clear input after successful submission
+      setInput("");
 
 
     } catch (err) {
@@ -147,7 +135,21 @@ export default function Home() {
           </PromptInputToolbar>
            </PromptInput>
             
-           {JSON.stringify(events[events.length - 1], null, 2)}
+           {error && (
+             <div className="mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded text-sm">
+               {error}
+             </div>
+           )}
+
+           
+             <div className="mt-4 p-4">
+               <pre className="text-xs overflow-auto">
+                 {
+                  typeof data === 'string' ? data : JSON.stringify(data, null, 2)
+                 }
+               </pre>
+             </div>
+           
 
           </div>  
         </section>

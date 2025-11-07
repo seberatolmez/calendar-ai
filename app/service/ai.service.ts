@@ -97,7 +97,7 @@ const model = genAI.getGenerativeModel({
 
 export async function handleUserPrompt(prompt: string, accessToken: string) {
   try {
-    const systemPrompt = `
+    const systemInstruction = `
 You are Garbi, an intelligent AI assistant that helps users manage their Google Calendar through natural language.
 
 You can call these tools to perform operations:
@@ -153,12 +153,15 @@ When you need to pass an event object to createEvent or updateEvent, convert the
 - When the user only greets you or makes small talk, reply with short plain text without calling any tools.
 `;
 
+    // Create model instance with system instruction for this request
+    const model = genAI.getGenerativeModel({
+      model: 'gemini-2.0-flash',
+      tools: tools,
+      systemInstruction: systemInstruction
+    });
+
     const result = await model.generateContent({
       contents: [
-        {
-          role: 'system',
-          parts: [{ text: systemPrompt }]
-        },
         {
           role: 'user',
           parts: [{ text: prompt }]

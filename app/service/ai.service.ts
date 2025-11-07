@@ -141,17 +141,50 @@ export async function handleUserPrompt(prompt: string, accessToken: string, user
     console.log('User timezone:', timeZone);
     
     const now = new Date();
-    const currentTimeInTZ = new Intl.DateTimeFormat('en-US', {
+    
+    // Get current date and time in user's timezone
+    const currentDateParts = new Intl.DateTimeFormat('en-CA', {
       timeZone: timeZone,
       year: 'numeric',
       month: '2-digit',
       day: '2-digit',
+    }).formatToParts(now);
+    
+    const currentTimeParts = new Intl.DateTimeFormat('en-US', {
+      timeZone: timeZone,
       hour: '2-digit',
       minute: '2-digit',
       hour12: false,
-    }).format(now);
+    }).formatToParts(now);
     
-    console.log('Current time in user timezone:', currentTimeInTZ);
+    const getPart = (parts: Intl.DateTimeFormatPart[], type: string) => 
+      parts.find(p => p.type === type)?.value || '';
+    
+    const currentYear = getPart(currentDateParts, 'year');
+    const currentMonth = getPart(currentDateParts, 'month');
+    const currentDay = getPart(currentDateParts, 'day');
+    const currentHour = getPart(currentTimeParts, 'hour');
+    const currentMinute = getPart(currentTimeParts, 'minute');
+    
+    const currentDate = `${currentYear}-${currentMonth}-${currentDay}`;
+    const currentTime = `${currentHour}:${currentMinute}`;
+    const currentDateTime = `${currentDate}T${currentTime}:00`;
+    
+    // Calculate tomorrow's date
+    const tomorrow = new Date(now);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const tomorrowDateParts = new Intl.DateTimeFormat('en-CA', {
+      timeZone: timeZone,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    }).formatToParts(tomorrow);
+    const tomorrowDate = `${getPart(tomorrowDateParts, 'year')}-${getPart(tomorrowDateParts, 'month')}-${getPart(tomorrowDateParts, 'day')}`;
+    
+    console.log('Current date in user timezone:', currentDate);
+    console.log('Current datetime in user timezone:', currentDateTime);
+    console.log('Tomorrow date in user timezone:', tomorrowDate);
+    console.log('Current year:', currentYear);
 
     const systemInstruction = `
 You are Garbi, an intelligent AI assistant that helps users manage their Google Calendar through natural language.
@@ -184,10 +217,10 @@ When calling createEvent or updateEvent, provide the following parameters:
 - endDateTime: End time in ISO 8601 format (YYYY-MM-DDTHH:mm:ss) - REQUIRED
 - timeZone: IANA time zone identifier (e.g., "America/New_York", "Europe/London") - REQUIRED for createEvent
 
-Example: If user says "schedule tennis tomorrow at 8am for 1.5 hours":
+Example: If user says "schedule tennis tomorrow at 8am for 1.5 hours" (and today is ${currentDate}):
 - summary: "Tennis"
-- startDateTime: "2024-12-XXT08:00:00" (resolve tomorrow's date)
-- endDateTime: "2024-12-XXT09:30:00" (1.5 hours later)
+- startDateTime: "${tomorrowDate}T08:00:00" (use EXACT date ${tomorrowDate} for tomorrow)
+- endDateTime: "${tomorrowDate}T09:30:00" (1.5 hours later, same date ${tomorrowDate})
 - timeZone: "${timeZone}" (MUST use this exact timezone)
 
 ---
@@ -195,11 +228,20 @@ Example: If user says "schedule tennis tomorrow at 8am for 1.5 hours":
 ### Critical Constraints
 
 - User's time zone: **${timeZone}**
-- Current time in user's time zone: **${currentTimeInTZ}**
+- CURRENT DATE (today): **${currentDate}**
+- CURRENT DATE AND TIME: **${currentDateTime}**
+- TOMORROW'S DATE: **${tomorrowDate}**
+
+**IMPORTANT DATE RESOLUTION RULES:**
+- When user says "today" → use date: **${currentDate}**
+- When user says "tomorrow" → use date: **${tomorrowDate}** (THIS IS THE EXACT DATE TO USE)
+- When user says "next week" → calculate from ${currentDate}, add 7 days
+- ALWAYS use the CURRENT YEAR (${currentYear}) when resolving dates
 - ALWAYS use the timezone "${timeZone}" when creating or updating events.
 - Interpret all times in the user's local time zone: **${timeZone}**. NEVER guess or use a different timezone.
 - NEVER use UTC or add "Z" to times unless explicitly requested by the user.
-- If the user says "today", "tomorrow", or "evening", resolve it to a specific date/time in timezone: **${timeZone}**
+- NEVER use dates from the past or wrong year. Today is ${currentDate}, so "tomorrow" MUST be ${tomorrowDate}.
+- When creating events, use the EXACT date ${tomorrowDate} for "tomorrow", not any other date.
 - When unsure which event to modify/delete, use search parameters ('q', 'date') instead of assuming IDs.
 - When the user only greets you or makes small talk, reply with short plain text without calling any tools.
 `;

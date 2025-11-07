@@ -37,7 +37,7 @@ export default function Home() {
       const response = await fetch("/api/handle-user-prompt", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt: input.trim }),
+        body: JSON.stringify({ prompt: input.trim() }),
       });
 
       data = await response.json().catch(() => null);

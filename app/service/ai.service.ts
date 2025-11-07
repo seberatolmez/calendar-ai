@@ -95,52 +95,9 @@ const model = genAI.getGenerativeModel({
   tools: tools
 });
 
-
-
-export class InvalidAIJsonError extends Error {
-  raw: string;
-  constructor(raw: string) {
-    super('Invalid JSON from AI');
-    this.raw = raw;
-    this.name = 'InvalidAIJsonError';
-  }
-}
-
-function sanitizePotentialJson(text: string): string {
-  const trimmed = text.trim();
-  if (trimmed.startsWith('```')) {
-    // Removes “```json” or “```” wrappers
-    return trimmed.replace(/^```[a-zA-Z]*\n?/, '').replace(/\n?```$/, '').trim();
-  }
-  return trimmed;
-}
-
-function formatDateTimeInZone(date: Date, timeZone: string): string {
-  const parts = new Intl.DateTimeFormat('en-CA', {
-    timeZone,
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-    hour12: false,
-  }).formatToParts(date);
-
-  const get = (type: string) => parts.find(p => p.type === type)?.value || '';
-  return `${get('year')}-${get('month')}-${get('day')}T${get('hour')}:${get('minute')}:${get('second')}`;
-}
-
-export async function parseEventFromPrompt(
-  rawText: string,
-  userTimeZone?: string,
-  userNowISO?: string
-) {
-  const nowForPrompt = userNowISO || new Date().toISOString();
-  const tzForPrompt = userTimeZone || 'UTC';
-
-  
-  const prompt = `
+export async function handleUserPrompt(prompt: string, accessToken: string) {
+  try {
+    const systemPrompt = `
 You are Garbi, an intelligent AI assistant that helps users manage their Google Calendar through natural language.
 
 You can call these tools to perform operations:
@@ -163,7 +120,7 @@ You can call these tools to perform operations:
 
 ### Event Creation / Update Structure
 
-When you need to pass an event object to createEvent or updateEvent, convert the user’s description into a JSON object compatible with Google Calendar API:
+When you need to pass an event object to createEvent or updateEvent, convert the user's description into a JSON object compatible with Google Calendar API:
 
 {
   "summary": string,
@@ -189,72 +146,19 @@ When you need to pass an event object to createEvent or updateEvent, convert the
 
 ### Critical Constraints
 
-- Interpret all times in the provided user time zone: "${tzForPrompt}".
-- Current time in that zone: "${nowForPrompt}".
-- NEVER use UTC or add "Z" to times.
+- Interpret all times in the user's local time zone. Use IANA time zone identifiers (e.g., "America/New_York", "Europe/London").
+- NEVER use UTC or add "Z" to times unless explicitly requested.
 - If the user says "today", "tomorrow", or "evening", resolve it to a specific date/time in the user's time zone.
 - When unsure which event to modify/delete, use search parameters ('q', 'date') instead of assuming IDs.
-- When calling a tool, output ONLY a function call — no explanation or markdown.
-- When the user only greets you or makes small talk, reply with short plain text.
+- When the user only greets you or makes small talk, reply with short plain text without calling any tools.
 `;
 
-
-  try {
     const result = await model.generateContent({
       contents: [
-         {
-            role: 'system',
-            parts: [{ text: prompt }]
-         },
-
-         {
-          role: 'user',
-          parts: [{ text: rawText }]
-         }
-
-      ]
-
-    });
-    const text = result.response.text();
-    const cleaned = sanitizePotentialJson(text);
-
-    let parsed;
-    try {
-      parsed = JSON.parse(cleaned);
-    } catch {
-      throw new InvalidAIJsonError(cleaned);
-    }
-
-
-    if (userTimeZone) {
-      if (parsed.start) parsed.start.timeZone = userTimeZone;
-      if (parsed.end) parsed.end.timeZone = userTimeZone;
-    }
-
-    const normalize = (dt: string) => {
-      const date = new Date(dt);
-      if (isNaN(date.getTime())) return dt; 
-      return formatDateTimeInZone(date, tzForPrompt);
-    };
-
-    if (parsed.start?.dateTime) {
-      parsed.start.dateTime = normalize(parsed.start.dateTime);
-    }
-    if (parsed.end?.dateTime) {
-      parsed.end.dateTime = normalize(parsed.end.dateTime);
-    }
-
-    return parsed;
-  } catch (error) {
-    console.error('Error generating or parsing event:', error);
-    throw new Error('Failed to parse event from AI response.');
-  }
-}
-
-export async function handleUserPrompt(prompt: string, accessToken: string) {
-  try {
-    const result = await model.generateContent({
-      contents: [
+        {
+          role: 'system',
+          parts: [{ text: systemPrompt }]
+        },
         {
           role: 'user',
           parts: [{ text: prompt }]

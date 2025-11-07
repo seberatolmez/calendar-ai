@@ -29,7 +29,7 @@ export async function listEvents(accessToken: string,maxResults: number){
         const response = await calendarClient.events.list({
             calendarId: 'primary',
             timeMin: new Date().toISOString(),
-            maxResults: maxResults,
+            maxResults: maxResults || 10,
             singleEvents: true,
             orderBy: 'startTime',
         });

@@ -14,7 +14,15 @@ const calendarTools: FunctionDeclaration[] = [   // all calendar functions
                     maxResults: {
                         type: SchemaType.INTEGER,
                         description: 'maximum number of events to retrieve'
-                    }
+                    },
+                    timeMin: {
+                        type: SchemaType.STRING,
+                        description: 'RFC3339 timestamp to list events starting from (inclusive)'
+                    },
+                    timeMax: {
+                        type: SchemaType.STRING,
+                        description: 'RFC3339 timestamp to list events up to (inclusive)'
+                    } 
                 },
                 // no required if not specified, default '10'
             }
@@ -211,6 +219,13 @@ When calling createEvent or updateEvent, provide the following parameters:
 - startDateTime: Start time in ISO 8601 format (YYYY-MM-DDTHH:mm:ss) - REQUIRED
 - endDateTime: End time in ISO 8601 format (YYYY-MM-DDTHH:mm:ss) - REQUIRED
 - timeZone: IANA time zone identifier (e.g., "America/New_York", "Europe/London") - REQUIRED for createEvent
+
+### Listing Events Structure
+When calling listEvents, you may provide:
+- maxResults: maximum number of events to retrieve (optional, default 10)
+- timeMin: RFC3339 timestamp to list events starting from (optional)
+- timeMax: RFC3339 timestamp to list events up to (optional)
+- If you need use timeMin or timeMax, use the CURRENT DATE AND TIME: ${currentDateTime} as reference.
 
 Example: If user says "schedule tennis tomorrow at 8am for 1.5 hours" (and today is ${currentDate}):
 - summary: "Tennis"

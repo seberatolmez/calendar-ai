@@ -1,5 +1,6 @@
 // calendar service to commit events, update events, delete events, etc.
 
+import { time } from 'console';
 import { google, calendar_v3 } from 'googleapis';
 
 const CLIENT_ID = process.env.CLIENT_ID;
@@ -22,16 +23,17 @@ function getCalendarClient(accessToken: string) {
 
 
 // List upcoming events 
-export async function listEvents(accessToken: string,maxResults: number){
+export async function listEvents(accessToken: string,maxResults: number, timeMax?: string, timeMin?: string) {
 
     const calendarClient = getCalendarClient(accessToken);
      try {
         const response = await calendarClient.events.list({
             calendarId: 'primary',
-            timeMin: new Date().toISOString(),
+            timeMin: timeMin || (new Date()).toISOString(),
             maxResults: maxResults || 10,
             singleEvents: true,
             orderBy: 'startTime',
+            timeMax: timeMax // for filtering events up to a range
         });
 
         return response.data.items || [];

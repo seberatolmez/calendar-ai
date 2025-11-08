@@ -291,7 +291,9 @@ Example: If user says "schedule tennis tomorrow at 8am for 1.5 hours" (and today
     switch (name) {
       case "listEvents": {
         const maxResults = argsTyped.maxResults || 10;
-        const events = await calendarService.listEvents(accessToken, maxResults);
+        const timeMin = argsTyped.timeMin as string | undefined;
+        const timeMax = argsTyped.timeMax as string | undefined;
+        const events = await calendarService.listEvents(accessToken, maxResults, timeMax, timeMin);
         return { type: "events", events };
       }
       case "createEvent": {

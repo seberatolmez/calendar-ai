@@ -180,11 +180,6 @@ export async function handleUserPrompt(prompt: string, accessToken: string, user
       day: '2-digit',
     }).formatToParts(tomorrow);
     const tomorrowDate = `${getPart(tomorrowDateParts, 'year')}-${getPart(tomorrowDateParts, 'month')}-${getPart(tomorrowDateParts, 'day')}`;
-    
-    console.log('Current date in user timezone:', currentDate);
-    console.log('Current datetime in user timezone:', currentDateTime);
-    console.log('Tomorrow date in user timezone:', tomorrowDate);
-    console.log('Current year:', currentYear);
 
     const systemInstruction = `
 You are Garbi, an intelligent AI assistant that helps users manage their Google Calendar through natural language.

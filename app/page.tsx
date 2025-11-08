@@ -51,23 +51,6 @@ export default function Home() {
         setError((data && data.error) || "Failed to submit prompt");
         return;
       }
-
-      // Handle different response types
-      if (data.type === "events") {
-        console.log("Events:", data.events);
-        setEvents((prev) => [...prev, ...data.events]);
-      } else if (data.type === "event") {
-        console.log("Event:", data.event);
-        setEvents((prev) => [...prev, data.event]);
-      } else if (data.type === "success") {
-        console.log("Success:", data.message);
-      } else if (data.type === "text") {
-        console.log("Message:", data.message);
-      } else if (data.type === "disambiguation") {
-        console.log("Disambiguation needed:", data.candidates);
-        setError(`Multiple matches found. Please be more specific. Found ${data.candidates.length} events.`);
-      }
-
       // Clear input after successful submission
       setInput("");
 

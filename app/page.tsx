@@ -19,9 +19,8 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [input, setInput] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [events, setEvents] = useState<any[]>([]);
+  const [data, setData] = useState<any>(null);
   const developerEmail = process.env.NEXT_PUBLIC_DEVELOPER_EMAIL;
-  let data: any = null;
 
   useEffect(() => {
     if (!session) {
@@ -33,9 +32,14 @@ export default function Home() {
     if (!input.trim()) return;
     setLoading(true);
     setError(null);
+
     try {
-      // Get user's timezone from browser
-      const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      // Get user's timezone from localStorage or detect it
+      let userTimeZone = localStorage.getItem("userTimeZone");
+      if (!userTimeZone) {
+        userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        localStorage.setItem("userTimeZone", userTimeZone);
+      }
       
       const response = await fetch("/api/handle-user-prompt", {
         method: "POST",
@@ -46,14 +50,15 @@ export default function Home() {
         }),
       });
 
-      data = await response.json().catch(() => null);
+      const responseData = await response.json().catch(() => null);
+      setData(responseData);
+      
       if (!response.ok) {
-        setError((data && data.error) || "Failed to submit prompt");
+        setError((responseData && responseData.error) || "Failed to submit prompt");
         return;
       }
       // Clear input after successful submission
       setInput("");
-
 
     } catch (err) {
       console.error("Error submitting prompt:", err);

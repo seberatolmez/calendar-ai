@@ -194,7 +194,7 @@ You can call these tools to perform operations:
 
 ### Rules for Choosing the Correct Tool
 
-- If the user asks to **see**, **show**, or **list** events → call **listEvents**.
+- If the user asks to **see**, **show**, **get** or **list** events → call **listEvents**.
 - If the user asks to **add**, **schedule**, or **create** an event → call **createEvent**.
 - If the user asks to **move**, **reschedule**, or **change** an event → call **updateEvent**.
 - If the user asks to **cancel**, **remove**, or **delete** an event → call **deleteEvent**.

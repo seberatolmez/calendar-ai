@@ -223,8 +223,9 @@ When calling createEvent or updateEvent, provide the following parameters:
 ### Listing Events Structure
 When calling listEvents, you may provide:
 - maxResults: maximum number of events to retrieve (optional, default 10)
-- timeMin: RFC3339 timestamp to list events starting from (optional)
-- timeMax: RFC3339 timestamp to list events up to (optional)
+- timeMin: RFC3339 timestamp to list events starting from (optional, Must be in format "YYYY-MM-DDTHH:MM:SSZ")
+- timeMax: RFC3339 timestamp to list events up to (optional, Must be in format "YYYY-MM-DDTHH:MM:SSZ")
+- example RFC3339 timestamp format:  "2025-11-09T00:00:00Z"
 - If you need use timeMin or timeMax, use the CURRENT DATE AND TIME: ${currentDateTime} as reference.
 
 Example: If user says "schedule tennis tomorrow at 8am for 1.5 hours" (and today is ${currentDate}):

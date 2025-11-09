@@ -1,5 +1,7 @@
 "use client";
 
+import { SidebarProvider,SidebarTrigger } from "@/components/ui/sidebar";
+import { AppSidebar } from "./components/app-sidebar";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { SessionProvider } from "next-auth/react";
@@ -24,9 +26,15 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <SessionProvider>
-          {children}
-        </SessionProvider>
+        <SidebarProvider>
+          <AppSidebar />
+          <main>
+            <SidebarTrigger/>
+            <SessionProvider>
+              {children}
+            </SessionProvider>
+          </main>
+          </SidebarProvider>
       </body>
     </html>
   );

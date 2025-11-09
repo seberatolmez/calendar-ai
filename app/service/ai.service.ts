@@ -2,6 +2,7 @@
 
 import { FunctionDeclaration, GoogleGenerativeAI, SchemaType } from "@google/generative-ai";
 import *as calendarService from "./calendar.service";
+import { COLORS } from "../types/colors";
 
 
 const calendarTools: FunctionDeclaration[] = [   // all calendar functions 
@@ -41,7 +42,7 @@ const calendarTools: FunctionDeclaration[] = [   // all calendar functions
                         type: SchemaType.STRING,
                         description: 'Event description'
                     },
-                    
+
                     colorId: {
                       type: SchemaType.STRING,
                       description: 'Color ID for the event (optional, Google Calendar color IDs range from "1" to "11")'
@@ -143,6 +144,7 @@ const tools = [
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY || '');
+const colors = COLORS;
 const model = genAI.getGenerativeModel({
   model: 'gemini-2.0-flash', // may use gemini pro for better results later
   tools: tools
@@ -222,6 +224,7 @@ When calling createEvent or updateEvent, provide the following parameters:
 - summary: Event title (required for createEvent)
 - description: Event description (optional)
 - location: Event location (optional)
+- colorId: Color ID for the event (optional, choose from 1 to 11, refer to : ${JSON.stringify(colors)})
 - startDateTime: Start time in ISO 8601 format (YYYY-MM-DDTHH:mm:ss) - REQUIRED
 - endDateTime: End time in ISO 8601 format (YYYY-MM-DDTHH:mm:ss) - REQUIRED
 - timeZone: IANA time zone identifier (e.g., "America/New_York", "Europe/London") - REQUIRED for createEvent

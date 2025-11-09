@@ -20,8 +20,6 @@ function getCalendarClient(accessToken: string) {
     return google.calendar({version: 'v3', auth: client});
 }
 
-
-
 // List upcoming events 
 export async function listEvents(accessToken: string,maxResults: number, timeMax?: string, timeMin?: string) {
 

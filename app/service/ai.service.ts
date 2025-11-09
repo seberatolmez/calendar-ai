@@ -41,6 +41,12 @@ const calendarTools: FunctionDeclaration[] = [   // all calendar functions
                         type: SchemaType.STRING,
                         description: 'Event description'
                     },
+                    
+                    colorId: {
+                      type: SchemaType.STRING,
+                      description: 'Color ID for the event (optional, Google Calendar color IDs range from "1" to "11")'
+                    },
+
                     location: {
                         type: SchemaType.STRING,
                         description: 'Event location'

@@ -12,6 +12,7 @@ import {
   PromptInputSubmit,
 } from "@/components/ui/shadcn-io/ai/prompt-input";
 import { Loader } from "@/components/ui/shadcn-io/ai/loader";
+import { buttonVariants } from "@/components/ui/button";
 
 export default function Home() {
   const { data: session } = useSession();
@@ -125,6 +126,8 @@ export default function Home() {
             <PromptInputSubmit
               disabled={!input.trim() || loading}
               onClick={handleSubmit}
+              variant={"ghost"}
+              size={"icon-lg"}
             />
           </PromptInputToolbar>
            </PromptInput>

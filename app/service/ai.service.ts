@@ -316,6 +316,7 @@ Example: If user says "schedule tennis tomorrow at 8am for 1.5 hours" (and today
             summary: argsTyped.summary || 'Untitled Event',
             description: argsTyped.description || '',
             location: argsTyped.location || '',
+            colorId: argsTyped.colorId,
             start: {
               dateTime: argsTyped.startDateTime,
               timeZone: eventTimeZone

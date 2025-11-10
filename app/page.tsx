@@ -72,7 +72,7 @@ export default function Home() {
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground">
       {/* Navbar */}
-      <nav className="flex items-center justify-between w-full px-8 py-2 fixed top-0 left-0 bg-background/90 backdrop-blur-md shadow-sm z-50">
+      <nav className="sticky top-0 z-30 flex w-full items-center justify-between gap-4 bg-background/95 px-8 py-3 shadow-sm backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <Image
           src="/garbi-logo-copy.png"
           alt="Garbi Logo"
@@ -101,7 +101,7 @@ export default function Home() {
       </nav>
 
       {/* Main */}
-      <main className="flex flex-col items-center w-full max-w-3xl mx-auto mt-32 px-6 flex-grow">
+      <main className="flex flex-col items-center w-full max-w-3xl mx-auto mt-8 px-6 flex-grow">
           <h1 className="text-2xl font-bold mb-2">
             Welcome back{session?.user?.name ? `, ${session.user.name}` : ""} 👋
           </h1>

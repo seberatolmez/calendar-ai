@@ -1,7 +1,7 @@
 "use client";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { handleSignOut } from "./service/auth.service";
+import { handleSignOut } from "../service/auth.service";
 import { useEffect, useState } from "react";
 import { LogOutIcon } from "lucide-react";
 import Image from "next/image";
@@ -14,7 +14,7 @@ import {
 import { Loader } from "@/components/ui/shadcn-io/ai/loader";
 import { buttonVariants } from "@/components/ui/button";
 
-export default function Home() {
+export default function AskGarbi() {
   const { data: session } = useSession();
   const router = useRouter();
   const [loading, setLoading] = useState(false);

@@ -1,7 +1,7 @@
 "use client";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { handleSignOut } from "../service/auth.service";
+import { handleSignOut } from "@/app/service/auth.service";
 import { useEffect, useState } from "react";
 import { LogOutIcon } from "lucide-react";
 import Image from "next/image";

@@ -1,25 +1,32 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { handleSignOut } from "@/app/service/auth.service";
 import { LogOutIcon } from "lucide-react";
-import Image from "next/image";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 
 export function Navbar() {
   const { data: session } = useSession();
-  const router = useRouter();
+  const pathname = usePathname();
+
+  // Map routes to page names
+  const getPageName = () => {
+    if (pathname === "/timeline") return "Timeline";
+    if (pathname === "/garbi" || pathname === "/") return "Ask AI";
+    // Add more mappings as needed
+    return "Ask AI"; // default
+  };
+
+  const pageName = getPageName();
 
   return (
     <nav className="sticky top-0 z-30 flex w-full items-center justify-between gap-4 bg-background/95 px-8 py-3 shadow-sm backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <Image
-        src="/garbi-logo-copy.png"
-        alt="Garbi Logo"
-        width={120}
-        height={25}
-        className="object-contain w-auto cursor-pointer"
-        onClick={() => router.push("/")}
-      />
+      <div className="flex items-center gap-3">
+        <SidebarTrigger className="text-muted-foreground transition hover:text-foreground" />
+        <span className="text-[#6F55FF] font-medium">#</span>
+        <span className="font-medium">{pageName}</span>
+      </div>
 
       <div className="flex items-center gap-3">
         <button

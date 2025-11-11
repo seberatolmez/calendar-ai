@@ -18,7 +18,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarSeparator,
-  SidebarTrigger,
 } from "@/components/ui/sidebar"
 
 const primaryItems = [
@@ -37,14 +36,10 @@ export function AppSidebar() {
   return (
     <Sidebar>
       <SidebarHeader className="border-b px-4 py-3">
-        <div className="flex items-center gap-2 mb-3">
-          <SidebarTrigger className="text-muted-foreground transition hover:text-foreground" />
-        </div>
         <div className="flex items-center justify-between">
-            <p className="text-sm font-medium leading-snug">berat</p>
-            <p className="text-xs text-muted-foreground">Trial Plan</p>
+          <p className="text-sm font-medium leading-snug">berat</p>
+          <p className="text-xs text-muted-foreground">Trial Plan</p>
         </div>
-        
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>

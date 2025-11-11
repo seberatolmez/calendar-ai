@@ -13,9 +13,9 @@ export function Navbar() {
   // Map routes to page names
   const getPageName = () => {
     if (pathname === "/timeline") return "Timeline";
-    if (pathname === "/garbi" || pathname === "/") return "Ask AI";
+    if (pathname === "/garbi" || pathname === "/") return "Ask Garbi";
     // Add more mappings as needed
-    return "Ask AI"; // default
+    return "Ask Garbi"; // default
   };
 
   const pageName = getPageName();

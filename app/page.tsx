@@ -17,7 +17,6 @@ export default function AskGarbi() {
   const [input, setInput] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState<any>(null);
-  const developerEmail = process.env.NEXT_PUBLIC_DEVELOPER_EMAIL;
 
   useEffect(() => {
     if (!session) {

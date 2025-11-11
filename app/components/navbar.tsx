@@ -21,11 +21,14 @@ export function Navbar() {
   const pageName = getPageName();
 
   return (
-    <nav className="sticky top-0 z-30 flex w-full items-center justify-between gap-4 bg-background/95 px-8 py-3 shadow-sm backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <nav className="sticky top-0 z-30 flex w-full items-center justify-between gap-4 bg-background/95 px-1 py-3 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="flex items-center gap-3">
-        <SidebarTrigger className="text-muted-foreground transition hover:text-foreground" />
-        <span className="text-[#6F55FF] font-medium">#</span>
-        <span className="font-medium">{pageName}</span>
+        <SidebarTrigger 
+        className="text-muted-foreground transition cursor-pointer"
+        size={"icon-lg"} 
+        />
+        <span className="text-[var(--color-blue)] text-xl font-medium">#</span>
+        <span className="font-semibold">{pageName}</span>
       </div>
 
       <div className="flex items-center gap-3">

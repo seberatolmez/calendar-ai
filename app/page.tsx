@@ -1,10 +1,7 @@
 "use client";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { handleSignOut } from "@/app/service/auth.service";
 import { useEffect, useState } from "react";
-import { LogOutIcon } from "lucide-react";
-import Image from "next/image";
 import {
   PromptInput,
   PromptInputTextarea,
@@ -69,42 +66,11 @@ export default function AskGarbi() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-background text-foreground">
-      {/* Navbar */}
-      <nav className="sticky top-0 z-30 flex w-full items-center justify-between gap-4 bg-background/95 px-8 py-3 shadow-sm backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <Image
-          src="/garbi-logo-copy.png"
-          alt="Garbi Logo"
-          width={120}
-          height={25}
-          className="object-contain w-auto cursor-pointer"
-          onClick={() => router.push("/")}
-        />
-
-        <div className="flex items-center gap-3">
-          <button
-            className="bg-[#6F55FF] hover:bg-[#5d46e0] text-white px-4 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer"
-            onClick={() => window.open("https://calendar.google.com")}
-          >
-            Go to Calendar
-          </button>
-          <button
-            className="flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer"
-            onClick={handleSignOut}
-            disabled={!session}
-          >
-            <LogOutIcon size={16} />
-            {session ? "Sign Out" : "Signing Out..."}
-          </button>
-        </div>
-      </nav>
-
-      {/* Main */}
-      <main className="flex flex-col items-center w-full max-w-3xl mx-auto mt-8 px-6 flex-grow">
-          <h1 className="text-2xl font-bold mb-2">
-            Welcome back{session?.user?.name ? `, ${session.user.name}` : ""} 👋
-          </h1>
-           
+    <div className="flex flex-col items-center w-full max-w-3xl mx-auto mt-8 px-6 flex-grow">
+      <h1 className="text-2xl font-bold mb-2">
+        Welcome back{session?.user?.name ? `, ${session.user.name}` : ""} 👋
+      </h1>
+       
       <section className="w-full mt-10">
         <div className="rounded-xl bg-muted/20 shadow-sm">
 
@@ -149,21 +115,6 @@ export default function AskGarbi() {
 
           </div>  
         </section>
-      </main>
-
-      {/* Footer */}
-      <footer className="py-6 text-center border-t mt-8">
-        <p className="text-sm text-gray-500">
-          Built by{" "}
-          <a
-            href={`mailto:${developerEmail}`}
-            className="text-[#6F55FF] font-semibold hover:text-[#5d46e0]"
-            target="_blank"
-          >
-            Berat Ölmez
-          </a>
-        </p>
-      </footer>
     </div>
   );
 }

@@ -5,9 +5,9 @@ import {
   SidebarInset,
   SidebarProvider,
   SidebarRail,
-  SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { AppSidebar } from "./app-sidebar";
+import { Navbar } from "./navbar";
 
 interface SidebarLayoutProps {
   children: React.ReactNode;
@@ -32,7 +32,7 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
       <AppSidebar />
       <SidebarRail />
       <SidebarInset>
-        <SidebarTrigger className= "text-muted-foreground transition hover:text-foreground"/>
+        <Navbar />
         <main className="flex-1">{children}</main>
       </SidebarInset>
     </SidebarProvider>

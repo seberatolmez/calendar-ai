@@ -12,7 +12,6 @@ import {
   PromptInputSubmit,
 } from "@/components/ui/shadcn-io/ai/prompt-input";
 import { Loader } from "@/components/ui/shadcn-io/ai/loader";
-import { buttonVariants } from "@/components/ui/button";
 
 export default function AskGarbi() {
   const { data: session } = useSession();

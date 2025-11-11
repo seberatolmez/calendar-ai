@@ -32,10 +32,8 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
       <AppSidebar />
       <SidebarRail />
       <SidebarInset>
-        <header className="sticky top-0 z-40 flex h-14 shrink-0 items-center justify-end gap-2 border-b bg-background/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-          <SidebarTrigger className="text-muted-foreground transition hover:text-foreground" />
-        </header>
-        <div className="flex flex-1 flex-col overflow-hidden">{children}</div>
+        <SidebarTrigger className= "text-muted-foreground transition hover:text-foreground"/>
+        <main className="flex-1">{children}</main>
       </SidebarInset>
     </SidebarProvider>
   );

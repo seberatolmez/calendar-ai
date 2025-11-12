@@ -20,10 +20,12 @@ import {
   SidebarSeparator,
 } from "@/components/ui/sidebar"
 
+import { usePathname,useRouter } from "next/navigation"
+
+
 const primaryItems = [
-  { title: "Ask AI", icon: MessageCircle, url: "/garbi"},
-  { title: "Task", icon: CheckSquare, url: "#" },
-  { title: "Inbox", icon: Inbox, url: "#" },
+  { title: "Ask AI", icon: MessageCircle, url: "/"},
+  { title: "Task", icon: CheckSquare, url: "#" }, // to be implemented later 
   { title: "Timeline", icon: Calendar, url: "/timeline" },
 ]
 
@@ -33,6 +35,9 @@ const knowledgeItems = [
 ]
 
 export function AppSidebar() {
+  const router = useRouter();
+  const pathname = usePathname();
+
   return (
     <Sidebar>
       <SidebarHeader className="border-b px-4 py-3">
@@ -46,15 +51,24 @@ export function AppSidebar() {
           <SidebarGroupLabel>Main</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {primaryItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton>
+              {primaryItems.map((item) => {
+                const isActive = pathname === item.url;
+                
+                return (
+                  <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton
+                  variant={"outline"}
+                  onClick={()=> router.push(item.url)}
+                  aria-current={isActive ? "page" : undefined}
+                  >
                     <item.icon className="size-4" />
                     <span>{item.title}</span>
-                    <a href={item.url}></a>
+
                   </SidebarMenuButton>
                 </SidebarMenuItem>
-              ))}
+                )
+                
+      })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

@@ -48,7 +48,7 @@ export default function CalendarHeader({ currentDate, onDateChange, view, onView
     } else if (view === "week") {
       return format(currentDate, "MMMM yyyy");
     } else {
-      return format(currentDate, "MMMM");
+      return format(currentDate, "MMMM yyyy");
     }
   };
 
@@ -111,7 +111,7 @@ export default function CalendarHeader({ currentDate, onDateChange, view, onView
         <TabsList>
           <TabsTrigger value="day">Day</TabsTrigger>
           <TabsTrigger value="week">Week</TabsTrigger>
-          <TabsTrigger value="year">Month</TabsTrigger>
+          <TabsTrigger value="month">Month</TabsTrigger>
         </TabsList>
       </Tabs>
     </div>

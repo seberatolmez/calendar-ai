@@ -6,6 +6,7 @@ import CalendarGrid from "@/app/components/CalendarGrid";
 import { CalendarEvent } from "@/app/components/EventCard";
 
 // Sample events for testing
+const todayIso = new Date().toISOString().slice(0, 10);
 const sampleEvents: CalendarEvent[] = [
   {
     id: "1",
@@ -13,6 +14,7 @@ const sampleEvents: CalendarEvent[] = [
     startTime: "09:00",
     endTime: "09:30",
     color: "primary",
+    date: todayIso,
     description: "Daily team sync",
   },
   {
@@ -21,6 +23,7 @@ const sampleEvents: CalendarEvent[] = [
     startTime: "11:00",
     endTime: "12:00",
     color: "secondary",
+    date: todayIso,
     description: "Review new mockups",
   },
   {
@@ -29,6 +32,7 @@ const sampleEvents: CalendarEvent[] = [
     startTime: "13:00",
     endTime: "14:00",
     color: "success",
+    date: todayIso,
     description: "Time to recharge",
   },
   {
@@ -37,6 +41,7 @@ const sampleEvents: CalendarEvent[] = [
     startTime: "15:00",
     endTime: "16:00",
     color: "warning",
+    date: todayIso,
     description: "Quarterly review",
   },
 ];

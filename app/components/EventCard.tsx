@@ -7,6 +7,8 @@ export interface CalendarEvent {
   title: string;
   startTime: string;
   endTime: string;
+  // ISO date (YYYY-MM-DD) for the event day. Optional for demo/test events.
+  date?: string;
   color: "primary" | "secondary" | "success" | "warning";
   description?: string;
 }

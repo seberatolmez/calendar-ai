@@ -38,7 +38,13 @@ function WeekView({ currentDate, events, onEventClick, today }: { currentDate: D
     const targetDate = addDays(weekStart, day);
     return events.filter(event => {
       const [eventHour] = event.startTime.split(":").map(Number);
-      return isSameDay(targetDate, currentDate) && eventHour === hour;
+      // If the event has a date field (ISO YYYY-MM-DD), compare it to the targetDate.
+      if (event.date) {
+        const eventDate = new Date(event.date + "T00:00:00");
+        return isSameDay(eventDate, targetDate) && eventHour === hour;
+      }
+      // Fallback: if no date provided, assume events belong to the currently selected date.
+      return isSameDay(currentDate, targetDate) && eventHour === hour;
     });
   };
 
@@ -125,7 +131,12 @@ function DayView({ currentDate, events, onEventClick, today }: { currentDate: Da
   const getEventsForHour = (hour: number) => {
     return events.filter(event => {
       const [eventHour] = event.startTime.split(":").map(Number);
-      return isSameDay(currentDate, currentDate) && eventHour === hour;
+      // If event has a date, compare event date with currentDate; otherwise treat it as belonging to currentDate
+      if (event.date) {
+        const eventDate = new Date(event.date + "T00:00:00");
+        return isSameDay(eventDate, currentDate) && eventHour === hour;
+      }
+      return eventHour === hour;
     });
   };
 
@@ -176,20 +187,30 @@ function MonthView({currentDate,events,onEventClick, today}:
    const startDay = monthStart.getDay(); 
    const adjustedStartDay = startDay === 0 ? 6 : startDay - 1;
    
-   const days = Array.from({ length: daysInMonth}, (_, i) => i + 1);
+   const totalCells = 42; // 6 weeks * 7 days
    const emptyDays = Array.from({ length: adjustedStartDay }, (_, i) => i);
+   const monthDays = Array.from({ length: daysInMonth}, (_, i) => i + 1);
+   const trailingDays = totalCells - emptyDays.length - monthDays.length;
 
-   const getEventsForDay = (day: number)=> {
-        const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
-        return events.filter(event => isSameDay(date, currentDate));
+   const getEventsForDay = (date: Date)=> {
+     return events.filter(event => {
+       if (event.date) {
+      const eventDate = new Date(event.date + "T00:00:00");
+      return isSameDay(eventDate, date);
+       }
+       // fallback: if no date set, only show on the currently selected date
+       return isSameDay(date, currentDate);
+     });
    };
+
+   const weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
     return (
     <div className="flex-1 overflow-auto p-6">
       <div className="max-w-7xl mx-auto">
         {/* Day headers */}
         <div className="grid grid-cols-7 gap-2 mb-2">
-          {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].map((day) => (
+          {weekdays.map((day) => (
             <div key={day} className="text-sm font-semibold text-muted-foreground text-center p-2">
               {day}
             </div>
@@ -201,10 +222,10 @@ function MonthView({currentDate,events,onEventClick, today}:
           {emptyDays.map((_, i) => (
             <div key={`empty-${i}`} className="bg-muted/30 rounded-lg min-h-[120px]" />
           ))}
-          {days.map((day) => {
+          {monthDays.map((day) => {
             const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
             const isToday = isSameDay(date, today);
-            const dayEvents = getEventsForDay(day);
+            const dayEvents = getEventsForDay(date);
             
             return (
               <div
@@ -238,6 +259,9 @@ function MonthView({currentDate,events,onEventClick, today}:
               </div>
             );
           })}
+          {trailingDays > 0 && Array.from({ length: trailingDays }, (_, i) => (
+            <div key={`trailing-${i}`} className="bg-muted/30 rounded-lg min-h-[120px]" />
+          ))}
         </div>
       </div>
     </div>

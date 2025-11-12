@@ -5,10 +5,10 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ChevronLeft, ChevronRight, CalendarIcon } from "lucide-react";
-import { format, addWeeks, subWeeks, addDays, subDays, addYears, subYears } from "date-fns";
+import { format, addWeeks, subWeeks, addDays, subDays, addYears, subYears, subMonths, addMonths } from "date-fns";
 import { cn } from "@/lib/utils";
 
-export type CalendarView = "day" | "week" | "year";
+export type CalendarView = "day" | "week" | "month";
 
 interface CalendarHeaderProps {
   currentDate: Date;
@@ -24,7 +24,7 @@ export default function CalendarHeader({ currentDate, onDateChange, view, onView
     } else if (view === "week") {
       onDateChange(subWeeks(currentDate, 1));
     } else {
-      onDateChange(subYears(currentDate, 1));
+      onDateChange(subMonths(currentDate, 1));
     }
   };
   
@@ -34,7 +34,7 @@ export default function CalendarHeader({ currentDate, onDateChange, view, onView
     } else if (view === "week") {
       onDateChange(addWeeks(currentDate, 1));
     } else {
-      onDateChange(addYears(currentDate, 1));
+      onDateChange(addMonths(currentDate, 1));
     }
   };
   
@@ -48,7 +48,7 @@ export default function CalendarHeader({ currentDate, onDateChange, view, onView
     } else if (view === "week") {
       return format(currentDate, "MMMM yyyy");
     } else {
-      return format(currentDate, "yyyy");
+      return format(currentDate, "MMMM");
     }
   };
 
@@ -111,7 +111,7 @@ export default function CalendarHeader({ currentDate, onDateChange, view, onView
         <TabsList>
           <TabsTrigger value="day">Day</TabsTrigger>
           <TabsTrigger value="week">Week</TabsTrigger>
-          <TabsTrigger value="year">Year</TabsTrigger>
+          <TabsTrigger value="year">Month</TabsTrigger>
         </TabsList>
       </Tabs>
     </div>

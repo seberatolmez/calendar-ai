@@ -1,5 +1,5 @@
 
-import { format, addDays, startOfWeek, isSameDay, startOfYear, addMonths, getDaysInMonth, startOfMonth } from "date-fns";
+import { addDays, format, getDaysInMonth, isSameDay, startOfMonth, startOfWeek } from "date-fns";
 import EventCard, { CalendarEvent } from "./EventCard";
 import { cn } from "@/lib/utils";
 import { CalendarView } from "./CalendarHeader";
@@ -21,8 +21,8 @@ export default function CalendarGrid({ currentDate, events, onEventClick, view }
     return <DayView currentDate={currentDate} events={events} onEventClick={onEventClick} today={today} />;
   }
 
-  if (view === "year") {
-    return <YearView currentDate={currentDate} events={events} onEventClick={onEventClick} today={today} />;
+  if (view === "month") {
+    return <MonthView currentDate={currentDate} events={events} onEventClick={onEventClick} today={today} />;
   }
 
   return <WeekView currentDate={currentDate} events={events} onEventClick={onEventClick} today={today} />;
@@ -167,85 +167,81 @@ function DayView({ currentDate, events, onEventClick, today }: { currentDate: Da
   );
 }
 
-// Year View Component
-function YearView({ currentDate, events, onEventClick, today }: { currentDate: Date; events: CalendarEvent[]; onEventClick?: (event: CalendarEvent) => void; today: Date }) {
-  const yearStart = startOfYear(currentDate);
-  const months = Array.from({ length: 12 }, (_, i) => addMonths(yearStart, i));
+// Month View Component
+function MonthView({currentDate,events,onEventClick, today}: 
+    {currentDate: Date; events: CalendarEvent[]; onEventClick?: (event: CalendarEvent) => void; today: Date}) {
 
-  const getEventsForMonth = (month: Date) => {
-    return events.filter(event => 
-      isSameDay(month, currentDate)
-    ).length;
-  };
+   const monthStart = startOfMonth(currentDate);
+   const daysInMonth = getDaysInMonth(monthStart);
+   const startDay = monthStart.getDay(); 
+   const adjustedStartDay = startDay === 0 ? 6 : startDay - 1;
+   
+   const days = Array.from({ length: daysInMonth}, (_, i) => i + 1);
+   const emptyDays = Array.from({ length: adjustedStartDay }, (_, i) => i);
 
-  return (
+   const getEventsForDay = (day: number)=> {
+        const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
+        return events.filter(event => isSameDay(date, currentDate));
+   };
+
+    return (
     <div className="flex-1 overflow-auto p-6">
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {months.map((month) => (
-          <MonthMiniCalendar
-            key={month.toISOString()}
-            month={month}
-            currentDate={currentDate}
-            today={today}
-            eventCount={getEventsForMonth(month)}
-          />
-        ))}
-      </div>
-    </div>
-  );
-}
-
-// Mini Month Calendar for Year View
-function MonthMiniCalendar({ month, currentDate, today, eventCount }: { month: Date; currentDate: Date; today: Date; eventCount: number }) {
-  const monthStart = startOfMonth(month);
-  const daysInMonth = getDaysInMonth(month);
-  const startDay = monthStart.getDay();
-  const adjustedStartDay = startDay === 0 ? 6 : startDay - 1;
-  
-  const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
-  const emptyDays = Array.from({ length: adjustedStartDay }, (_, i) => i);
-
-  return (
-    <div className="bg-card border border-border rounded-lg p-4">
-      <h3 className="text-lg font-semibold text-foreground mb-3">
-        {format(month, "MMMM")}
-      </h3>
-      <div className="grid grid-cols-7 gap-1 mb-2">
-        {["M", "T", "W", "T", "F", "S", "S"].map((day, i) => (
-          <div key={i} className="text-xs text-muted-foreground text-center font-medium">
-            {day}
-          </div>
-        ))}
-      </div>
-      <div className="grid grid-cols-7 gap-1">
-        {emptyDays.map((_, i) => (
-          <div key={`empty-${i}`} className="aspect-square" />
-        ))}
-        {days.map((day) => {
-          const date = new Date(month.getFullYear(), month.getMonth(), day);
-          const isToday = isSameDay(date, today);
-          const isSelected = isSameDay(date, currentDate);
-          
-          return (
-            <div
-              key={day}
-              className={cn(
-                "aspect-square flex items-center justify-center text-sm rounded-md transition-colors",
-                isToday && "bg-primary text-primary-foreground font-semibold",
-                isSelected && !isToday && "bg-accent text-accent-foreground",
-                !isToday && !isSelected && "text-foreground hover:bg-muted"
-              )}
-            >
+      <div className="max-w-7xl mx-auto">
+        {/* Day headers */}
+        <div className="grid grid-cols-7 gap-2 mb-2">
+          {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].map((day) => (
+            <div key={day} className="text-sm font-semibold text-muted-foreground text-center p-2">
               {day}
             </div>
-          );
-        })}
-      </div>
-      {eventCount > 0 && (
-        <div className="mt-3 text-xs text-muted-foreground">
-          {eventCount} event{eventCount !== 1 ? "s" : ""}
+          ))}
         </div>
-      )}
+        
+        {/* Calendar grid */}
+        <div className="grid grid-cols-7 gap-2">
+          {emptyDays.map((_, i) => (
+            <div key={`empty-${i}`} className="bg-muted/30 rounded-lg min-h-[120px]" />
+          ))}
+          {days.map((day) => {
+            const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
+            const isToday = isSameDay(date, today);
+            const dayEvents = getEventsForDay(day);
+            
+            return (
+              <div
+                key={day}
+                className={cn(
+                  "bg-card border border-border rounded-lg p-3 min-h-[120px] transition-colors hover:border-primary/50",
+                  isToday && "border-primary bg-primary/5"
+                )}
+              >
+                <div className={cn(
+                  "text-sm font-semibold mb-2",
+                  isToday ? "text-primary" : "text-foreground"
+                )}>
+                  {day}
+                </div>
+                <div className="space-y-1">
+                  {dayEvents.map((event) => (
+                    <div
+                      key={event.id}
+                      onClick={() => onEventClick?.(event)}
+                      className={cn(
+                        "text-xs p-1 rounded cursor-pointer transition-all hover:scale-105",
+                        `bg-calendar-${event.color}`,
+                        "text-white font-medium truncate"
+                      )}
+                    >
+                      {event.startTime} {event.title}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
+
+
 }

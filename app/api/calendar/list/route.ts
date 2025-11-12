@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { listEvents } from '@/app/service/calendar.service';
 
-export async function GET(request: NextRequest) {
+export async function GET(request: NextRequest) { // Keep for testing
   const session = await getServerSession(authOptions);
 
   if (!session || !session.accessToken) {

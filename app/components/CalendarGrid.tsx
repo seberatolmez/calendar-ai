@@ -62,7 +62,7 @@ function WeekView({ currentDate, events, onEventClick, today }: { currentDate: D
                 key={day}
                 className={cn(
                   "p-4 text-center border-l border-border",
-                  isToday && "bg-primary/5"
+                  isToday && "bg-blue-500/5"
                 )}
               >
                 <div className="text-sm font-medium text-muted-foreground">
@@ -72,7 +72,7 @@ function WeekView({ currentDate, events, onEventClick, today }: { currentDate: D
                   className={cn(
                     "text-2xl font-semibold mt-1",
                     isToday
-                      ? "text-primary"
+                      ? "text-blue-600"
                       : "text-foreground"
                   )}
                 >
@@ -100,7 +100,7 @@ function WeekView({ currentDate, events, onEventClick, today }: { currentDate: D
                     key={`${day}-${hour}`}
                     className={cn(
                       "p-2 border-l border-border transition-colors hover:bg-calendar-grid/50",
-                      isToday && "bg-primary/5"
+                      isToday && "bg-blue-500/5"
                     )}
                   >
                     <div className="space-y-1">
@@ -146,7 +146,7 @@ function DayView({ currentDate, events, onEventClick, today }: { currentDate: Da
         {/* Day header */}
         <div className="grid grid-cols-2 border-b border-border sticky top-0 bg-card z-10">
           <div className="p-4 text-sm font-medium text-muted-foreground">Time</div>
-          <div className={cn("p-4 text-center border-l border-border", isToday && "bg-primary/5")}>
+          <div className={cn("p-4 text-center border-l border-border", isToday && "bg-blue-500/5")}>
             <div className="text-sm font-medium text-muted-foreground">
               {format(currentDate, "EEEE")}
             </div>
@@ -163,7 +163,7 @@ function DayView({ currentDate, events, onEventClick, today }: { currentDate: Da
               <div className="p-4 text-sm text-calendar-time font-medium">
                 {format(new Date().setHours(hour, 0), "HH:mm")}
               </div>
-              <div className={cn("p-2 border-l border-border transition-colors hover:bg-calendar-grid/50", isToday && "bg-primary/5")}>
+              <div className={cn("p-2 border-l border-border transition-colors hover:bg-calendar-grid/50", isToday && "bg-blue-500/5")}>
                 <div className="space-y-1">
                   {getEventsForHour(hour).map((event) => (
                     <EventCard key={event.id} event={event} onClick={() => onEventClick?.(event)} />

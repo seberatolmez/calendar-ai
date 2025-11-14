@@ -248,7 +248,7 @@ function MonthView({currentDate,events,onEventClick, today}:
                       onClick={() => onEventClick?.(event)}
                       className={cn(
                         "text-xs p-1 rounded cursor-pointer transition-all hover:scale-105",
-                        `bg-calendar-${event.color}`,
+                        `bg-calendar`,
                         "text-white font-medium truncate"
                       )}
                     >

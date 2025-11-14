@@ -54,7 +54,7 @@ export default function CalendarHeader({ currentDate, onDateChange, view, onView
 
   return (
     <div className="flex flex-col gap-4 p-6 border-b border-border bg-card">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center">
         <div className="flex items-center gap-4">
           <Popover>
             <PopoverTrigger asChild>

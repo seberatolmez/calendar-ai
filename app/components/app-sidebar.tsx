@@ -2,8 +2,7 @@ import {
   Calendar,
   CheckSquare,
   Folder,
-  Inbox,
-  MessageCircle,
+  Zap,
   Tag,
 } from "lucide-react"
 
@@ -23,8 +22,9 @@ import {
 import { usePathname,useRouter } from "next/navigation"
 
 
+
 const primaryItems = [
-  { title: "Ask AI", icon: MessageCircle, url: "/"},
+  { title: "Ask AI", icon: Zap, url: "/",special: "askAI"},
   { title: "Task", icon: CheckSquare, url: "#" }, // to be implemented later 
   { title: "Timeline", icon: Calendar, url: "/timeline" },
 ]
@@ -53,17 +53,18 @@ export function AppSidebar() {
             <SidebarMenu>
               {primaryItems.map((item) => {
                 const isActive = pathname === item.url;
+                const isAskAi = item.special === "askAI";
                 
                 return (
                   <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton
-                  variant={"outline"}
-                  onClick={()=> router.push(item.url)}
-                  aria-current={isActive ? "page" : undefined}
+                    className={isAskAi ? "text-[var(--color-blue)] font-semibold" : ""}
+                    variant={isAskAi ? "askAI": "outline"}
+                    onClick={() => router.push(item.url)}
+                    aria-current={isActive ? "page" : undefined}
                   >
                     <item.icon className="size-4" />
                     <span>{item.title}</span>
-
                   </SidebarMenuButton>
                 </SidebarMenuItem>
                 )

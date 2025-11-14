@@ -167,7 +167,7 @@ function DayView({ currentDate, events, onEventClick, today }: { currentDate: Da
     {HOURS.map((hour) => (
       <div
         key={hour}
-        className="col-span-2 grid grid-cols-[150px_1fr] border-b border-border min-h-[80px]"
+        className="col-span-2 grid grid-cols-[150px_1fr] border-b border-border min-h-[40px]"
       >
         <div className="p-4 text-sm text-calendar-time font-medium">
           {format(new Date().setHours(hour, 0), "HH:mm")}

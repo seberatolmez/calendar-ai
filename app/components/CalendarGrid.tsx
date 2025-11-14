@@ -141,41 +141,61 @@ function DayView({ currentDate, events, onEventClick, today }: { currentDate: Da
   };
 
   return (
-    <div className="flex-1 overflow-auto">
-      <div className="min-w-[600px]">
-        {/* Day header */}
-        <div className="grid grid-cols-2 border-b border-border sticky top-0 bg-card z-10">
-          <div className="p-4 text-sm font-medium text-muted-foreground">Time</div>
-          <div className={cn("p-4 text-center border-l border-border", isToday && "bg-blue-500/5")}>
-            <div className="text-sm font-medium text-muted-foreground">
-              {format(currentDate, "EEEE")}
-            </div>
-            <div className={cn("text-2xl font-semibold mt-1", isToday ? "text-primary" : "text-foreground")}>
-              {format(currentDate, "d")}
-            </div>
-          </div>
-        </div>
+  <div className="flex-1 overflow-auto">
+  <div className="min-w-[600px] grid grid-cols-[150px_1fr]">
 
-        {/* Time grid */}
-        <div className="relative">
-          {HOURS.map((hour) => (
-            <div key={hour} className="grid grid-cols-2 border-b border-border min-h-[80px]">
-              <div className="p-4 text-sm text-calendar-time font-medium">
-                {format(new Date().setHours(hour, 0), "HH:mm")}
-              </div>
-              <div className={cn("p-2 border-l border-border transition-colors hover:bg-calendar-grid/50", isToday && "bg-blue-500/5")}>
-                <div className="space-y-1">
-                  {getEventsForHour(hour).map((event) => (
-                    <EventCard key={event.id} event={event} onClick={() => onEventClick?.(event)} />
-                  ))}
-                </div>
-              </div>
-            </div>
-          ))}
+    {/* HEADER */}
+    <div className="col-span-2 grid grid-cols-[150px_1fr] border-b border-border sticky top-0 bg-card z-10">
+      <div className="p-4 text-sm font-medium text-muted-foreground">Time</div>
+      <div className={cn(
+        "p-4 text-center border-l border-border",
+        isToday && "bg-blue-500/5"
+      )}>
+        <div className="text-sm font-medium text-muted-foreground">
+          {format(currentDate, "EEEE")}
+        </div>
+        <div className={cn(
+          "text-2xl font-semibold mt-1",
+          isToday ? "text-primary" : "text-foreground"
+        )}>
+          {format(currentDate, "d")}
         </div>
       </div>
     </div>
-  );
+
+    {/* ROWS */}
+    {HOURS.map((hour) => (
+      <div
+        key={hour}
+        className="col-span-2 grid grid-cols-[150px_1fr] border-b border-border min-h-[80px]"
+      >
+        <div className="p-4 text-sm text-calendar-time font-medium">
+          {format(new Date().setHours(hour, 0), "HH:mm")}
+        </div>
+
+        <div
+          className={cn(
+            "p-2 border-l border-border transition-colors hover:bg-calendar-grid/50",
+            isToday && "bg-blue-500/5"
+          )}
+        >
+          <div className="space-y-1">
+            {getEventsForHour(hour).map((event) => (
+              <EventCard
+                key={event.id}
+                event={event}
+                onClick={() => onEventClick?.(event)}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+    ))}
+
+  </div>
+</div>
+);
+
 }
 
 // Month View Component

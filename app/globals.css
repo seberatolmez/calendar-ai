@@ -43,15 +43,12 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-blue: #3034FF;
-    --color-red: #FF3030;
-    --color-ikas-purple: #6F55FF;
-  }
-}
-
 :root {
+  --color-blue: #3034FF;
+  --color-blue-light: #E8E9FF;
+  --color-blue-hover: #D0D2FF;
+  --color-red: #FF3030;
+  --color-ikas-purple: #6F55FF;
   --radius: 0.625rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
@@ -118,6 +115,9 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+  --color-blue: #3034FF;
+  --color-blue-light: #1F1F3D;
+  --color-blue-hover: #2A2A4D;
 }
 
 @layer base {

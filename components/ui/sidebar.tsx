@@ -482,7 +482,7 @@ const sidebarMenuButtonVariants = cva(
         outline:
           "bg-background shadow-[0_0_0_1px_hsl(var(--sidebar-border))] hover:bg-sidebar-border hover:text-sidebar-accent-foreground hover:shadow-[0_0_0_1px_hsl(var(--sidebar-accent))] cursor-pointer",
         askAI:
-          "bg-[var(--color-blue/20)] hover:bg-[var(--color-blue/10)] cursor-pointer",  
+          "bg-[var(--color-blue-light)] hover:!bg-[var(--color-blue-hover)] hover:!text-[var(--color-blue)] cursor-pointer",  
       },
       size: {
         default: "h-8 text-sm",

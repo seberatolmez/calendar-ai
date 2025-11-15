@@ -10,7 +10,7 @@ export interface CalendarEvent {
   endTime: string;
   // ISO date (YYYY-MM-DD) for the event day. Optional for demo/test events.
   date?: string;
-  color: string // between 1-11
+  colorId: string // between 1-11
   description?: string;
 }
 
@@ -19,27 +19,13 @@ interface EventCardProps {
   onClick?: () => void;
 }
 
-const colorClasses: Record<string, string> = {
-  "1": COLORS[1].hex,
-  "2": COLORS[2].hex,
-  "3": COLORS[3].hex,
-  "4": COLORS[4].hex,
-  "5": COLORS[5].hex,
-  "6": COLORS[6].hex,
-  "7": COLORS[7].hex,
-  "8": COLORS[8].hex,
-  "9": COLORS[9].hex,
-  "10": COLORS[10].hex,
-  "11": COLORS[11].hex,
-}
-
 export default function EventCard({ event, onClick }: EventCardProps) {
   return (
     <div
       onClick={onClick}
       className={cn(
-        "p-2 rounded-lg border-l-4 cursor-pointer transition-all hover:scale-[1.02] hover:shadow-md",
-        colorClasses[event.color]
+        "p-2 rounded-lg border-l-4 cursor-pointer transition-all hover:scale-[1.02] hover:shadow-md text-background bg-[${COLORS[event.colorId]}]",
+        `bg-[${COLORS[event.colorId]}]`,        
       )}
     >
       <div className="font-medium text-sm truncate">{event.title}</div>

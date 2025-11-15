@@ -39,7 +39,7 @@ export function transformGoogleEventToCalendarEvent(
     : formatDate(startDate);
 
   // Get color ID (default to "1" if not provided)
-  const color = googleEvent.colorId || '1';
+  const colorId = googleEvent.colorId || '1';
 
   return {
     id: googleEvent.id,
@@ -47,7 +47,7 @@ export function transformGoogleEventToCalendarEvent(
     startTime,
     endTime,
     date,
-    color,
+    colorId: colorId,
     description: googleEvent.description || undefined,
   };
 }

@@ -33,6 +33,7 @@ export default function TimelinePage() {
         if (data.success && data.events) {
           const transformedEvents = transformGoogleEventsToCalendarEvents(data.events);
           setEvents(transformedEvents);
+          console.log("Fetched events:", transformedEvents); // logging fetched events 
         }
       } catch (error) {
         console.error("Error fetching events:", error);
@@ -51,7 +52,7 @@ export default function TimelinePage() {
   };
 
   return (
-    <div className="h-screen flex flex-col bg-background">
+    <div className="h-screen pl-8 pr-8 flex flex-col bg-background">
       <CalendarHeader 
         currentDate={currentDate} 
         onDateChange={setCurrentDate}

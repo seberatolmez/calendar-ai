@@ -1,5 +1,5 @@
 import {
-  Calendar,
+  CalendarDays,
   CheckSquare,
   Folder,
   Zap,
@@ -26,7 +26,7 @@ import { usePathname,useRouter } from "next/navigation"
 const primaryItems = [
   { title: "Ask AI", icon: Zap, url: "/",special: "askAI"},
   { title: "Task", icon: CheckSquare, url: "#" }, // to be implemented later 
-  { title: "Timeline", icon: Calendar, url: "/timeline" },
+  { title: "Timeline", icon: CalendarDays, url: "/timeline" },
 ]
 
 const knowledgeItems = [
@@ -63,7 +63,7 @@ export function AppSidebar() {
                     onClick={() => router.push(item.url)}
                     aria-current={isActive ? "page" : undefined}
                   >
-                    <item.icon className="size-4" />
+                    <item.icon/>
                     <span>{item.title}</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>

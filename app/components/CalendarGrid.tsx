@@ -86,7 +86,7 @@ function WeekView({ currentDate, events, onEventClick, today }: { currentDate: D
         {/* Time grid */}
         <div className="relative">
           {HOURS.map((hour) => (
-            <div key={hour} className="grid grid-cols-8 border-b border-border min-h-[80px]">
+            <div key={hour} className="grid grid-cols-8 border-b border-border min-h-[40px]">
               <div className="p-4 text-sm text-calendar-time font-medium">
                 {format(new Date().setHours(hour, 0), "HH:mm")}
               </div>
@@ -145,7 +145,7 @@ function DayView({ currentDate, events, onEventClick, today }: { currentDate: Da
   <div className="min-w-[600px] grid grid-cols-[150px_1fr]">
 
     {/* HEADER */}
-    <div className="col-span-2 grid grid-cols-[150px_1fr] border-b border-border sticky top-0 bg-card z-10">
+    <div className="col-span-2 grid grid-cols-[100px_1fr] border-b border-border sticky top-0 bg-card z-10">
       <div className="p-4 text-sm font-medium text-muted-foreground">Time</div>
       <div className={cn(
         "p-4 text-center border-l border-border",
@@ -167,7 +167,7 @@ function DayView({ currentDate, events, onEventClick, today }: { currentDate: Da
     {HOURS.map((hour) => (
       <div
         key={hour}
-        className="col-span-2 grid grid-cols-[150px_1fr] border-b border-border min-h-[40px]"
+        className="col-span-2 grid grid-cols-[100px_1fr] border-b border-border min-h-[40px]"
       >
         <div className="p-4 text-sm text-calendar-time font-medium">
           {format(new Date().setHours(hour, 0), "HH:mm")}

@@ -27,7 +27,7 @@ export default function EventCard({ event, onClick }: EventCardProps) {
     <div
       onClick={onClick}
       style={{backgroundColor: colorHex}}
-      className="p-2 rounded-lg border-l-4 cursor-pointer transition-all hover:scale-[1.02] hover:shadow-md text-background"
+      className="p-2 rounded-md border-l-4 border-blue-400 cursor-pointer transition-all hover:scale-[1.02] hover:shadow-md text-background"
     >
       <div className="font-medium text-sm truncate">{event.title}</div>
       <div className="text-xs opacity-75 mt-1">

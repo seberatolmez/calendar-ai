@@ -33,7 +33,7 @@ export default function TimelinePage() {
         if (data.success && data.events) {
           const transformedEvents = transformGoogleEventsToCalendarEvents(data.events);
           setEvents(transformedEvents);
-          console.log("Fetched events:", transformedEvents); // logging fetched events 
+          console.log("Fetched events:", transformedEvents);
         }
       } catch (error) {
         console.error("Error fetching events:", error);
